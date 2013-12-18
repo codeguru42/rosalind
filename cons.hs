@@ -7,7 +7,7 @@
 import Rosalind
 
 main = do
-    contents <- readFile "grph.txt"
+    contents <- readFile "cons.txt"
     let fasta = parse contents
     let dnas = snd $ unzip fasta
     mapM_ putStrLn dnas
