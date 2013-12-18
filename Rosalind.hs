@@ -7,10 +7,13 @@
 module Rosalind
   ( parse
   , revc
-  , isRevp
   , index
   , indexes
   , format
+  , transcribe
+  , protein
+  , stopCodons
+  , chunksOf
   ) where
 
 import Control.Applicative ((<$>))
@@ -54,3 +57,39 @@ indexes xs ys = nub $ if i == -1 then is else i:is
 
 format :: [Int] -> String
 format xs = intercalate " " (show <$> xs)
+
+transcribe :: String -> String
+transcribe = map (\x -> case x of 
+    'T' -> 'U'
+    _   -> x)
+
+codon :: String -> String
+codon s = c
+    where Just c = lookup s codons
+          codons = [ ("UUU", "F"), ("UUC", "F"), ("UUA", "L"), ("UUG", "L")
+                   , ("UCU", "S"), ("UCC", "S"), ("UCA", "S"), ("UCG", "S")
+                   , ("UAU", "Y"), ("UAC", "Y"), ("UAA", "" ), ("UAG", "" )
+                   , ("UGU", "C"), ("UGC", "C"), ("UGA", "" ), ("UGG", "W")
+                   , ("CUU", "L"), ("CUC", "L"), ("CUA", "L"), ("CUG", "L")
+                   , ("CCU", "P"), ("CCC", "P"), ("CCA", "P"), ("CCG", "P")
+                   , ("CAU", "H"), ("CAC", "H"), ("CAA", "Q"), ("CAG", "Q")
+                   , ("CGU", "R"), ("CGC", "R"), ("CGA", "R"), ("CGG", "R")
+                   , ("AUU", "I"), ("AUC", "I"), ("AUA", "I"), ("AUG", "M")
+                   , ("ACU", "T"), ("ACC", "T"), ("ACA", "T"), ("ACG", "T")
+                   , ("AAU", "N"), ("AAC", "N"), ("AAA", "K"), ("AAG", "K")
+                   , ("AGU", "S"), ("AGC", "S"), ("AGA", "R"), ("AGG", "R")
+                   , ("GUU", "V"), ("GUC", "V"), ("GUA", "V"), ("GUG", "V")
+                   , ("GCU", "A"), ("GCC", "A"), ("GCA", "A"), ("GCG", "A")
+                   , ("GAU", "D"), ("GAC", "D"), ("GAA", "E"), ("GAG", "E")
+                   , ("GGU", "G"), ("GGC", "G"), ("GGA", "G"), ("GGG", "G")
+                   ]   
+
+chunksOf :: Int -> [a] -> [[a]]
+chunksOf _ [] = []
+chunksOf n xs = take n xs : chunksOf n (drop n xs)
+
+stopCodons :: [String]
+stopCodons = ["UAG", "UGA", "UAA"]
+
+protein :: String -> String
+protein = concat . map codon . takeWhile (\x -> not $ x `elem` stopCodons) . chunksOf 3
