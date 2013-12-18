@@ -10,4 +10,7 @@ main = do
     contents <- readFile "splc.txt"
     let fasta = parse contents
     let dnas = snd $ unzip fasta
-    mapM_ putStrLn dnas
+    let dna = head dnas
+    let exons = tail dnas
+    let is = map (flip indexes dna) exons
+    mapM_ print is
