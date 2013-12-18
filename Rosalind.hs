@@ -10,6 +10,7 @@ module Rosalind
   , index
   , indexes
   , format
+  , formatPair
   , transcribe
   , protein
   , stopCodons
@@ -57,6 +58,9 @@ indexes xs ys = nub $ if i == -1 then is else i:is
 
 format :: [Int] -> String
 format xs = intercalate " " (show <$> xs)
+
+formatPair :: (Show a, Show b) => (a, b) -> String
+formatPair (x, y) = show x ++ (' ' : show y)
 
 transcribe :: String -> String
 transcribe = map (\x -> case x of 

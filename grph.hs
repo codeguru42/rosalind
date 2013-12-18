@@ -6,14 +6,10 @@
 
 import Rosalind
 import Control.Applicative (liftA2)
-import Data.List (isPrefixOf)
-
-suffixes :: [a] -> [[a]]
-suffixes [] = []
-suffixes xs = xs : suffixes (tail xs)
+import Data.List (isSuffixOf)
 
 overlap :: String -> String -> Bool
-overlap s1 s2 = any (`isPrefixOf` s2) $ suffixes s1
+overlap s1 s2 = (take 3 s2) `isSuffixOf` s1
 
 overlapGraph :: [(String, String)] -> [(String, String)]
 overlapGraph fasta = map (\((x, _), (y, _)) -> (x, y)) pairs'
@@ -23,4 +19,4 @@ overlapGraph fasta = map (\((x, _), (y, _)) -> (x, y)) pairs'
 main = do
     contents <- readFile "grph.txt"
     let fasta = parse contents
-    print $ overlapGraph fasta
+    mapM_ putStrLn . map (\(x, y) -> x ++ " " ++ y) $ overlapGraph fasta
