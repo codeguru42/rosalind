@@ -5,6 +5,17 @@
 -- http://sam.zoy.org/wtfpl/COPYING for more details.
 
 import Rosalind
+import Data.List (isPrefixOf)
+
+suffixes :: [a] -> [[a]]
+suffixes [] = []
+suffixes xs = xs : suffixes (tail xs)
+
+overlap :: String -> String -> Bool
+overlap s1 s2 = any (`isPrefixOf` s2) $ suffixes s1
+
+overlapGraph :: [(String, String)] -> [(String, String)]
+overlapGraph = undefined
 
 main = do
     contents <- readFile "grph.txt"
