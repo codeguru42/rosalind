@@ -5,7 +5,8 @@
 -- http://sam.zoy.org/wtfpl/COPYING for more details.
 
 module Rosalind
-  ( parse
+  ( count
+  , parse
   , revc
   , index
   , indexes
@@ -18,7 +19,10 @@ module Rosalind
   ) where
 
 import Control.Applicative ((<$>))
-import Data.List (intercalate, isPrefixOf, nub)
+import Data.List (intercalate, isPrefixOf, nub, group, sort)
+
+count :: (Ord a) => [a] -> [(a, Int)]
+count = (map $ \xs -> (head xs, length xs)) . group . sort
 
 parse :: String -> [(String, String)]
 parse s = parse' $ lines s
