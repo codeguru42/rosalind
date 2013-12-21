@@ -60,7 +60,7 @@ indexes xs ys = nub $ if i == -1 then is else i:is
     where i = index xs ys
           is = map (+1) (indexes xs (tail ys))
 
-format :: [Int] -> String
+format :: Show a => [a] -> String
 format xs = intercalate " " (show <$> xs)
 
 formatPair :: (Show a, Show b) => (a, b) -> String
