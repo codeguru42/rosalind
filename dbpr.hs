@@ -13,8 +13,10 @@ main = do
     body <- getResponseBody response
     let drs = filter ("DR" `isPrefixOf`) $ lines body
     let gos = filter ("GO" `isPrefixOf`) $ map (drop 5) drs
-    let parsed = map (splitOn "; ") gos
-    mapM_ print parsed
+    let parsedGos = map (splitOn "; ") gos
+    let bios = concat . filter (not . null) $ map (filter ("P" `isPrefixOf`)) parsedGos
+    let parsedBios = map (splitOn ":") bios
+    mapM_ putStrLn $ map (!! 1) parsedBios
     where baseUrl = "http://www.uniprot.org/uniprot/"
-          uniprotId = "H3SRW3"
+          uniprotId = "P21923"
           url = baseUrl ++ uniprotId ++ ".txt"
