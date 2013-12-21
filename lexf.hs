@@ -5,9 +5,10 @@
 -- http://sam.zoy.org/wtfpl/COPYING for more details.
 
 kMers :: Int -> [Char] -> [String]
-kMers k alphabet = undefined
+kMers 0 _  = [[]]
+kMers k as = [a:as' | a <- as, as' <- kMers (k - 1) as]
 
 main = do
-    let alphabet = "TAGC"
-    let n = 2
+    let alphabet = "GVIBJAWED"
+    let n = 3
     mapM_ putStrLn $ kMers n alphabet
