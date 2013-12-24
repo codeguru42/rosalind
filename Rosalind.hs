@@ -16,6 +16,7 @@ module Rosalind
   , protein
   , stopCodons
   , chunksOf
+  , defaultLookup
   ) where
 
 import Control.Applicative ((<$>))
@@ -101,3 +102,6 @@ stopCodons = ["UAG", "UGA", "UAA"]
 
 protein :: String -> String
 protein = concat . map codon . takeWhile (\x -> not $ x `elem` stopCodons) . chunksOf 3
+
+defaultLookup :: Eq a => b -> a -> [(a, b)] -> b
+defaultLookup d key = maybe d id . lookup key 
