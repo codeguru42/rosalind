@@ -10,8 +10,15 @@ import Data.List (permutations)
 countSignedPermutations :: Integer -> Integer
 countSignedPermutations n = 2 ^ n * product [1..n]
 
+signs :: Integer -> [[Integer]]
+signs 0 = [[]]
+signs n = map (1:) ss ++ map (-1:) ss
+    where ss = signs $ n - 1
+
 main = do
     let perms = permutations [1..n]
     print $ countSignedPermutations n
-    mapM_ putStrLn $ map format perms
-    where n = 2
+    let mapSigns p = map (zipWith (*) p) $ signs n
+    let ss = concat $ map mapSigns perms
+    mapM_ putStrLn $ map format ss
+    where n = 4
