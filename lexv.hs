@@ -6,11 +6,11 @@
 
 import Control.Applicative ((<$>), (<*>))
 
-kMers :: Int -> [Char] -> [String]
-kMers 0 _  = [""]
-kMers k as = (:) <$> as <*> kMers (k-1) as
+kMers :: [Char] -> Int -> [String]
+kMers _ 0 = [""]
+kMers as k = "" : ((:) <$> as <*> kMers as (k-1))
 
 main = do
-    let alphabet = "DNA"
-    let n = 3
-    mapM_ print $ map (flip kMers alphabet) [1..n]
+    let alphabet = "RQXDEWPHYOK"
+    let n = 4
+    mapM_ putStrLn . tail $ kMers alphabet n
