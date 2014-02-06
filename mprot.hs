@@ -4,19 +4,29 @@
 -- To Public License, Version 2, as published by Sam Hocevar. See
 -- http://sam.zoy.org/wtfpl/COPYING for more details.
 
+import Data.Maybe (fromMaybe)
 import Network.HTTP
 
 import Rosalind
 
-getUniprotFasta :: String -> IO (String, String)
-getUniprotFasta uniprotId = do
-    response <- simpleHTTP $ getRequest url
-    fasta <- getResponseBody response
-    return $ parse fasta !! 0
+fastaUrl :: String -> String
+fastaUrl uniprotId = baseUrl ++ uniprotId ++ ".fasta"
     where baseUrl = "http://www.uniprot.org/uniprot/"
-          url = baseUrl ++ uniprotId ++ ".fasta"
+
+getUniprotFasta :: String -> IO (String, String)
+getUniprotFasta url = do
+    Right response <- simpleHTTP $ getRequest url
+    let fasta = rspBody response
+    let headers = rspHeaders response
+    let location = lookupHeader HdrLocation headers
+    case location of
+        Nothing -> return $ parse fasta !! 0
+        Just l  -> getUniprotFasta l
 
 main = do
-    fasta <- getUniprotFasta uniprotId
-    print fasta
-    where uniprotId = "B5ZC00"
+    uniprotIds <- readFile idFileName
+    print $ lines uniprotIds
+    let urls = map fastaUrl $ lines uniprotIds
+    fastas <- mapM getUniprotFasta urls
+    mapM_ print fastas
+    where idFileName = "mprot.txt"
