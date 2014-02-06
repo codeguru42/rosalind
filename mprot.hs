@@ -6,6 +6,7 @@
 
 import Data.Maybe (fromMaybe)
 import Network.HTTP
+import Text.Regex.Posix
 
 import Rosalind
 
@@ -35,10 +36,20 @@ motifToRegex ('[':x:y:']':rest) = '(' : x : '|' : y : ')' : motifToRegex rest
 motifToRegex ('{':x:'}':rest)   = "[^" ++ (x : ']' : motifToRegex rest)
 motifToRegex (x:rest)           = x : motifToRegex rest
 
+findAllMotifs :: String -> String -> [Int]
+findAllMotifs motif protein 
+    | index == -1 = []
+    | otherwise   = index : findAllMotifs motif (drop (index + 1) protein) 
+    where index = fst $ (protein =~ motifToRegex motif :: (Int, Int))
+
 main = do
     content <- readFile idFileName
     prots <- getProteins $ lines content
     mapM_ print prots
-    putStrLn $ motifToRegex glycosylation
+    let matches = findAllMotifs glycosylation . snd $ prots !! 2
+    putStrLn . fst $ prots !! 2
+    print matches
+    let indices = tail . scanl (+) 0 $ map (+1) matches
+    print indices
     where idFileName = "mprot.txt"
           glycosylation = "N{P}[ST]{P}"
