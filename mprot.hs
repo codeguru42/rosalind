@@ -24,9 +24,10 @@ getUniprotFasta url = do
         Just l  -> getUniprotFasta l
 
 main = do
-    uniprotIds <- readFile idFileName
-    print $ lines uniprotIds
-    let urls = map fastaUrl $ lines uniprotIds
+    content <- readFile idFileName
+    let uniprotIds = lines content
+    let urls = map fastaUrl uniprotIds
     fastas <- mapM getUniprotFasta urls
-    mapM_ print fastas
+    let prots = zip uniprotIds $ map snd fastas
+    mapM_ print prots
     where idFileName = "mprot.txt"
