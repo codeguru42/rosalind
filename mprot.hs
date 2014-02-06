@@ -6,10 +6,17 @@
 
 import Network.HTTP
 
-main = do
+import Rosalind
+
+getUniprotFasta :: String -> IO (String, String)
+getUniprotFasta uniprotId = do
     response <- simpleHTTP $ getRequest url
-    body <- getResponseBody response
-    putStrLn body
+    fasta <- getResponseBody response
+    return $ parse fasta !! 0
     where baseUrl = "http://www.uniprot.org/uniprot/"
-          uniprotId = "B5ZC00"
           url = baseUrl ++ uniprotId ++ ".fasta"
+
+main = do
+    fasta <- getUniprotFasta uniprotId
+    print fasta
+    where uniprotId = "B5ZC00"
