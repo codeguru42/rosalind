@@ -23,6 +23,12 @@ getUniprotFasta url = do
         Nothing -> return $ parse fasta !! 0
         Just l  -> getUniprotFasta l
 
+getProteins :: [String] -> IO [(String, String)]
+getProteins uniprotIds = do
+    let urls = map fastaUrl uniprotIds
+    fastas <- mapM getUniprotFasta urls
+    return . zip uniprotIds $ map snd fastas
+
 motifToRegex :: String -> String
 motifToRegex ""                 = ""
 motifToRegex ('[':x:y:']':rest) = '(' : x : '|' : y : ')' : motifToRegex rest
@@ -31,10 +37,7 @@ motifToRegex (x:rest)           = x : motifToRegex rest
 
 main = do
     content <- readFile idFileName
-    let uniprotIds = lines content
-    let urls = map fastaUrl uniprotIds
-    fastas <- mapM getUniprotFasta urls
-    let prots = zip uniprotIds $ map snd fastas
+    prots <- getProteins $ lines content
     mapM_ print prots
     putStrLn $ motifToRegex glycosylation
     where idFileName = "mprot.txt"
