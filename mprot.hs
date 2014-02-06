@@ -43,12 +43,16 @@ findAllMotifs motif = tail . scanl (+) 0 . map (+1) . findAllMotifs' motif
             | otherwise   = index : findAllMotifs' motif (drop (index + 1) protein) 
             where index = fst $ (protein =~ motifToRegex motif :: (Int, Int))
 
+printMotifs :: [(String, [Int])] -> [IO ()]
+printMotifs []     = [putStrLn ""]
+printMotifs (x:xs) = printMotifs' x ++ printMotifs xs
+    where printMotifs' (id, matches) = [putStrLn id, putStrLn $ format matches]
+
 main = do
     content <- readFile idFileName
     prots <- getProteins $ lines content
-    mapM_ print prots
-    let matches = findAllMotifs glycosylation . snd $ prots !! 2
-    putStrLn . fst $ prots !! 2
-    print matches
+    let allMatches = map (findAllMotifs glycosylation) (map snd prots)
+    let motifs = filter (not . null . snd) $ zip (map fst prots) allMatches
+    sequence_ $ printMotifs motifs
     where idFileName = "mprot.txt"
           glycosylation = "N{P}[ST]{P}"
