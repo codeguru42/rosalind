@@ -6,8 +6,29 @@
 
 import Rosalind
 
+transitionScore :: Char -> Char -> Int
+transitionScore n1 n2
+    | n1 == 'A' && n2 == 'G' = 1
+    | n1 == 'G' && n2 == 'A' = 1
+    | n1 == 'C' && n2 == 'T' = 1
+    | n1 == 'T' && n2 == 'C' = 1
+    | otherwise = 0
+
+transitionCount :: String -> String -> Int
+transitionCount dna1 = sum . zipWith transitionScore dna1
+
+transversionScore :: Char -> Char -> Int
+transversionScore n1 n2
+    | (n1 == 'A' || n1 == 'G') && (n2 == 'C' || n2 == 'T') = 1
+    | (n1 == 'C' || n1 == 'T') && (n2 == 'A' || n2 == 'G') = 1
+    | otherwise = 0
+
+transversionCount :: String -> String -> Int
+transversionCount dna1 = sum . zipWith transversionScore dna1
+
 main = do
-    contents <- readFile "grph.txt"
+    contents <- readFile "tran.txt"
     let fasta = parse contents
     let dnas = snd $ unzip fasta
-    mapM_ putStrLn dnas
+    print $ (fromIntegral $ transitionCount (dnas !! 0) (dnas !! 1))
+          / (fromIntegral $ transversionCount (dnas !! 0) (dnas !! 1))
