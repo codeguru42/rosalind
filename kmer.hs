@@ -5,10 +5,15 @@
 -- http://sam.zoy.org/wtfpl/COPYING for more details.
 
 import Control.Applicative ((<$>), (<*>))
+import Data.List (isPrefixOf)
 import Rosalind
 
 kMers _ 0 = [[]]
 kMers alphabet n = (:) <$> alphabet <*> kMers alphabet (n - 1)
+
+countKmer [] _ = 0
+countKmer dna kmer = if kmer `isPrefixOf` dna then 1 + rest else rest
+    where rest = countKmer (tail dna) kmer
 
 main = do
     contents <- readFile "kmer.txt"
@@ -16,4 +21,6 @@ main = do
     let dnas = snd $ unzip fasta
     let dna = dnas !! 0
     let alphabet = "ACGT"
-    mapM_ putStrLn $ kMers alphabet 4
+    let fourMers = kMers alphabet 4
+    let composition = map (countKmer dna) fourMers 
+    putStrLn $ format composition
