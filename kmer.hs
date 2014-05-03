@@ -4,4 +4,10 @@
 -- To Public License, Version 2, as published by Sam Hocevar. See
 -- http://sam.zoy.org/wtfpl/COPYING for more details.
 
-main = undefined
+import Rosalind
+
+main = do
+    contents <- readFile "kmer.txt"
+    let fasta = parse contents
+    let dnas = snd $ unzip fasta
+    mapM_ putStrLn dnas
