@@ -5,10 +5,12 @@
 -- http://sam.zoy.org/wtfpl/COPYING for more details.
 
 rabbits :: Int -> Int -> Int
-rabbits 1 _ = 1
-rabbits 2 _ = 1
-rabbits n k = rabbits (n - 1) k + k * rabbits (n - 2) k
+rabbits k n = rabbits' !! (n - 1)
+    where rabbits' = [r i | i <- [0..]]
+          r 0 = 1
+          r 1 = 1
+          r n = rabbits' !! (n - 1) + k * rabbits' !! (n - 2)
 
-main = print $ rabbits n k
+main = print $ rabbits k n
     where n = 33
           k = 2
