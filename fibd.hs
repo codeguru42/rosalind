@@ -7,11 +7,17 @@
 import Test.HUnit.Base ((~=?), (~:))
 import Test.HUnit.Text (runTestTT)
 
-fibd :: Int -> Int -> Int
-fibd n m = undefined
+fibd :: Int -> Int -> Integer
+fibd n m = sum $ fibd' !! (n-1)
+    where fibd' = [[fibd'' i j | i <- [0..m-1]] | j <- [0..n]]
+          -- `fibd'' i j` is the number of rabbits which are `i` months old after `j` months since the first generation 
+          fibd'' 0 0 = 1
+          fibd'' _ 0 = 0
+          fibd'' 0 j = sum . tail $ fibd' !! (j-1)
+          fibd'' i j = fibd' !! (j-1) !! (i-1)
 
 testFibd = "Test fibd" ~: expected ~=? actual
-    where expected = [1, 1, 2, 2, 3, 4, 5, 7]
-          actual = map (\n -> fibd n 3) [1..8]
+    where expected = [1, 1, 2, 2, 3, 4, 5, 7, 9, 12]
+          actual = map (\n -> fibd n 3) [1..10]
 
 main = runTestTT testFibd
