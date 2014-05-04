@@ -20,4 +20,7 @@ testFibd = "Test fibd" ~: expected ~=? actual
     where expected = [1, 1, 2, 2, 3, 4, 5, 7, 9, 12]
           actual = map (\n -> fibd n 3) [1..10]
 
-main = runTestTT testFibd
+main = do
+    print $ fibd n m
+    where n = 89
+          m = 19
