@@ -8,6 +8,9 @@ data Trie a = Leaf
             | Node [(a, Trie a)]
             deriving Show
 
+makeTrie :: [String] -> Trie Char
+makeTrie = undefined
+
 main = do
   let fileName = "trie.txt"
   input <- readFile fileName
