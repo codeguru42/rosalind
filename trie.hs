@@ -4,6 +4,10 @@
 -- To Public License, Version 2, as published by Sam Hocevar. See
 -- http://sam.zoy.org/wtfpl/COPYING for more details.
 
+data Trie a = Leaf
+            | Node [(a, Trie a)]
+            deriving Show
+
 main = do
   let fileName = "trie.txt"
   input <- readFile fileName
