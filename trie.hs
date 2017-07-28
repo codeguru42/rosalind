@@ -5,7 +5,7 @@
 -- http://sam.zoy.org/wtfpl/COPYING for more details.
 
 data Trie a = Leaf
-            | Node [(a, Trie a)]
+            | Node a [Trie a]
             deriving Show
 
 makeTrie :: [String] -> Trie Char
