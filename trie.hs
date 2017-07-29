@@ -4,6 +4,8 @@
 -- To Public License, Version 2, as published by Sam Hocevar. See
 -- http://sam.zoy.org/wtfpl/COPYING for more details.
 
+import qualified Data.MultiMap as MultiMap
+
 data Trie a = Leaf
             | Node a [Trie a]
             deriving Show
@@ -11,8 +13,15 @@ data Trie a = Leaf
 makeTrie :: [String] -> Trie Char
 makeTrie = undefined
 
+partitionByFirstChar :: [String] -> MultiMap.MultiMap Char String
+partitionByFirstChar [] = MultiMap.empty
+partitionByFirstChar ((x:xs):xss)
+  = MultiMap.insert x xs partitioned
+    where partitioned = partitionByFirstChar xss
+
 main = do
   let fileName = "trie.txt"
   input <- readFile fileName
   let strings = lines input
   print strings
+  print . MultiMap.toList $ partitionByFirstChar strings
