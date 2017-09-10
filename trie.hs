@@ -15,6 +15,7 @@ makeTrie = undefined
 
 partitionByFirstChar :: [String] -> MultiMap.MultiMap Char String
 partitionByFirstChar [] = MultiMap.empty
+partitionByFirstChar ([]:xss) = partitionByFirstChar xss
 partitionByFirstChar ((x:xs):xss)
   = MultiMap.insert x xs partitioned
     where partitioned = partitionByFirstChar xss
