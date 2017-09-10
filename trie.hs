@@ -11,7 +11,9 @@ data Trie a = Leaf
             deriving Show
 
 makeTrie :: [String] -> Trie Char
-makeTrie = undefined
+makeTrie [] = Leaf
+makeTrie xs = Node $ map (\(k, xs) -> (k, makeTrie xs)) root
+  where root = MultiMap.assocs $ partitionByFirstChar xs
 
 partitionByFirstChar :: [String] -> MultiMap.MultiMap Char String
 partitionByFirstChar [] = MultiMap.empty
@@ -29,3 +31,4 @@ main = do
   print $ MultiMap.toList partitioned
   print $ MultiMap.assocs partitioned
   print $ partitioned MultiMap.! 'A'
+  print $ makeTrie strings
