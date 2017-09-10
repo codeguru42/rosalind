@@ -7,7 +7,7 @@
 import qualified Data.MultiMap as MultiMap
 
 data Trie a = Leaf
-            | Node a [Trie a]
+            | Node [(a, Trie a)]
             deriving Show
 
 makeTrie :: [String] -> Trie Char
