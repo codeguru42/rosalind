@@ -27,8 +27,4 @@ main = do
   input <- readFile fileName
   let strings = lines input
   print strings
-  let partitioned = partitionByFirstChar strings
-  print $ MultiMap.toList partitioned
-  print $ MultiMap.assocs partitioned
-  print $ partitioned MultiMap.! 'A'
   print $ makeTrie strings
