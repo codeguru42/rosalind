@@ -22,9 +22,18 @@ partitionByFirstChar ((x:xs):xss)
   = MultiMap.insert x xs partitioned
     where partitioned = partitionByFirstChar xss
 
+number :: Int -> Trie a -> (Int, [(Int, Int, a)])
+number n Leaf = (n + 1, [])
+number n (Node ps) = foldl go (n + 1, []) ps
+    where go (m, acc) (c, t) = (m', acc')
+            where acc' = (n, m, c) : edges ++ acc
+                  (m', edges) = number m t
+
 main = do
   let fileName = "trie.txt"
   input <- readFile fileName
   let strings = lines input
   print strings
-  print $ makeTrie strings
+  let trie = makeTrie strings
+  print trie
+  print $ number 1 trie
