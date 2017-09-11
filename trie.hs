@@ -33,12 +33,7 @@ printNumbers :: [(Int, Int, Char)] -> IO()
 printNumbers xs = mapM_ printNumbers' xs
 
 printNumbers' :: (Int, Int, Char) -> IO()
-printNumbers' (n, m, c) = do
-  putStr $ show n
-  putStr " "
-  putStr $ show m
-  putStr " "
-  putStrLn [c]
+printNumbers' (n, m, c) = putStrLn $ concat [show n, " ", show m, " ", [c]]
 
 main = do
   let fileName = "trie.txt"
