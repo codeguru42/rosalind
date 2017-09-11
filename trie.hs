@@ -31,9 +31,7 @@ number n (Node ps) = foldl go (n + 1, []) ps
 
 printNumbers :: [(Int, Int, Char)] -> IO()
 printNumbers xs = mapM_ printNumbers' xs
-
-printNumbers' :: (Int, Int, Char) -> IO()
-printNumbers' (n, m, c) = putStrLn $ concat [show n, " ", show m, " ", [c]]
+    where printNumbers' (n, m, c) = putStrLn $ concat [show n, " ", show m, " ", [c]]
 
 main = do
   let fileName = "trie.txt"
