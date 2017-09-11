@@ -6,6 +6,10 @@
 
 import Rosalind
 
+data SuffixTree = Leaf Int
+        | Node [(String, SuffixTree)]
+        deriving Show
+
 main = do
     contents <- readFile "lcsm.txt"
     let fasta = parse contents
