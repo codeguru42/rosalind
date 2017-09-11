@@ -44,7 +44,6 @@ main = do
   let fileName = "trie.txt"
   input <- readFile fileName
   let strings = lines input
-  print strings
   let trie = makeTrie strings
-  print trie
-  print $ number 1 trie
+  let numbers = snd $ number 1 trie
+  printNumbers numbers
