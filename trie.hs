@@ -25,13 +25,13 @@ partitionByFirstChar ((x:xs):xss)
 number :: Int -> Trie a -> (Int, [(Int, Int, a)])
 number n Leaf = (n + 1, [])
 number n (Node ps) = foldl go (n + 1, []) ps
-    where go (m, acc) (c, t) = (m', acc')
-            where acc' = (n, m, c) : edges ++ acc
-                  (m', edges) = number m t
+  where go (m, acc) (c, t) = (m', acc')
+          where acc' = (n, m, c) : edges ++ acc
+                (m', edges) = number m t
 
 printNumbers :: [(Int, Int, Char)] -> IO()
 printNumbers xs = mapM_ printNumbers' xs
-    where printNumbers' (n, m, c) = putStrLn $ concat [show n, " ", show m, " ", [c]]
+  where printNumbers' (n, m, c) = putStrLn $ concat [show n, " ", show m, " ", [c]]
 
 main = do
   let fileName = "trie.txt"
