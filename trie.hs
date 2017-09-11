@@ -29,6 +29,17 @@ number n (Node ps) = foldl go (n + 1, []) ps
             where acc' = (n, m, c) : edges ++ acc
                   (m', edges) = number m t
 
+printNumbers :: [(Int, Int, Char)] -> IO()
+printNumbers xs = mapM_ printNumbers' xs
+
+printNumbers' :: (Int, Int, Char) -> IO()
+printNumbers' (n, m, c) = do
+  putStr $ show n
+  putStr " "
+  putStr $ show m
+  putStr " "
+  putStrLn [c]
+
 main = do
   let fileName = "trie.txt"
   input <- readFile fileName
