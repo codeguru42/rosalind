@@ -31,7 +31,9 @@ binomCdf :: Double -> Integer -> Integer -> Double
 binomCdf p n k = sum $ map (binomPdf p n) [0..k-1]
 
 main = do
-    print $ pdf 1 probAa
-    print $ pdf 2 probAa
-    print $ pdf 3 probAa
-    print $ map (flip pdf $ probAa) [1..10]
+    let p = binomCdf 0.25 4 1
+    print $ p
+    print $ (1 - p)
+    let q = binomCdf 0.25 (2^6) 17
+    print $ q
+    print $ (1 - q)
