@@ -18,6 +18,8 @@ pdf n probs = sumProbs $ zipWith multProbs probs pdf'
           pdfaa = pdf (n-1) probaa
           pdf' = [pdfAA, pdfAa, pdfaa]
 
+choose n k = product [n-k+1..n] `div` product [1..k]
+
 main = do
     print $ pdf 1 probAa
     print $ pdf 2 probAa
