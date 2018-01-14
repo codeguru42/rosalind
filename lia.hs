@@ -21,6 +21,15 @@ pdf n probs = sumProbs $ zipWith multProbs probs pdf'
 choose n k = product [n-k'+1..n] `div` product [1..k']
     where k' = min k (n - k)
 
+binomPdf :: Double -> Integer -> Integer -> Double
+binomPdf p n k = coeff * p**k' * (1 - p)**(n' - k')
+    where n' = fromIntegral n
+          k' = fromIntegral k
+          coeff = fromIntegral (n `choose` k)
+
+binomCdf :: Double -> Integer -> Integer -> Double
+binomCdf p n k = sum $ map (binomPdf p n) [0..k-1]
+
 main = do
     print $ pdf 1 probAa
     print $ pdf 2 probAa
