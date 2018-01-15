@@ -13,4 +13,16 @@ main = do
     contents <- readFile "mmch.txt"
     let fasta = parse contents
     let rnas = snd $ unzip fasta
-    print rnas
+    let counts = count $ rnas !! 0
+    let lookup x = fromIntegral $ defaultLookup 1 x counts
+    let aCount = lookup 'A'
+    let uCount = lookup 'U'
+    let gCount = lookup 'G'
+    let cCount = lookup 'C'
+    let auMax = max aCount uCount
+    let auMin = min aCount uCount
+    let gcMax = max gCount cCount
+    let gcMin = min gCount cCount
+    print counts
+    print $ (auMax `choose` auMin) * (factorial auMin)
+        * (gcMax `choose` gcMin) * (factorial gcMin)

@@ -107,5 +107,6 @@ protein = concat . map codon . takeWhile (\x -> not $ x `elem` stopCodons) . chu
 defaultLookup :: Eq a => b -> a -> [(a, b)] -> b
 defaultLookup d key = maybe d id . lookup key 
 
+choose :: Integer -> Integer -> Integer
 choose n k = product [n-k'+1..n] `div` product [1..k']
     where k' = min k (n - k)
