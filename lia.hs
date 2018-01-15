@@ -4,6 +4,8 @@
 -- To Public License, Version 2, as published by Sam Hocevar. See
 -- http://sam.zoy.org/wtfpl/COPYING for more details.
 
+import Rosalind (choose)
+
 probAA = [0.5 , 0.5, 0.0 ]
 probAa = [0.25, 0.5, 0.25]
 probaa = [0.0 , 0.5, 0.5 ]
@@ -17,9 +19,6 @@ pdf n probs = sumProbs $ zipWith multProbs probs pdf'
           pdfAa = pdf (n-1) probAa
           pdfaa = pdf (n-1) probaa
           pdf' = [pdfAA, pdfAa, pdfaa]
-
-choose n k = product [n-k'+1..n] `div` product [1..k']
-    where k' = min k (n - k)
 
 binomPdf :: Double -> Integer -> Integer -> Double
 binomPdf p n k = coeff * p**k' * (1 - p)**(n' - k')
