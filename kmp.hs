@@ -7,7 +7,7 @@
 import Test.HUnit
 import Rosalind
 
-tests = test [testLongestPrefix]
+tests = test [testLongestPrefix, testFailure]
 longestPrefixTestCases = [ (2, "CAG", "CAT")
                          , (0, "GAC", "TAC")
                          , (5, "CAGCATGGT", "CAGCAGAG")
@@ -15,10 +15,18 @@ longestPrefixTestCases = [ (2, "CAG", "CAT")
 testLongestPrefix = map (\(expected, a, b)
                             -> expected ~=? longestPrefix a b)
                         longestPrefixTestCases
+failureTestCases = [ ( [0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 1, 2, 1, 2, 3, 4, 5, 3, 0, 0]
+                     , "CAGCATGGTATCACAGCAGAG"
+                     )
+                   ]
+testFailure = map (\(expected, a) -> expected ~=? failure a)
+                  failureTestCases
 
 longestPrefix (x:xs) (y:ys)
     | x == y = longestPrefix xs ys + 1
     | otherwise = 0
+
+failure = undefined
 
 main = do
     runTestTT tests
