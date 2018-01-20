@@ -8,7 +8,10 @@ import Test.HUnit
 import Rosalind
 
 tests = test [testLongestPrefix]
-longestPrefixTestCases = [(2, "CAG", "CAT")]
+longestPrefixTestCases = [ (2, "CAG", "CAT")
+                         , (0, "GAC", "TAC")
+                         , (5, "CAGCATGGT", "CAGCAGAG")
+                         ]
 testLongestPrefix = map (\(expected, a, b)
                             -> expected ~=? longestPrefix a b)
                         longestPrefixTestCases
