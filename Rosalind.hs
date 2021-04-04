@@ -18,10 +18,13 @@ module Rosalind
   , chunksOf
   , defaultLookup
   , choose
+  , Trie (Leaf, Node)
+  , makeTrie
   ) where
 
 import Control.Applicative ((<$>))
 import Data.List (intercalate, isPrefixOf, nub, group, sort)
+import qualified Data.MultiMap as MultiMap
 
 count :: (Ord a) => [a] -> [(a, Int)]
 count = (map $ \xs -> (head xs, length xs)) . group . sort
@@ -110,3 +113,20 @@ defaultLookup d key = maybe d id . lookup key
 choose :: Integer -> Integer -> Integer
 choose n k = product [n-k'+1..n] `div` product [1..k']
     where k' = min k (n - k)
+
+-- Trie
+data Trie a = Leaf
+            | Node [(a, Trie a)]
+            deriving Show
+
+makeTrie :: [String] -> Trie Char
+makeTrie [] = Leaf
+makeTrie xs = Node $ map (\(k, xs) -> (k, makeTrie xs)) root
+  where root = MultiMap.assocs $ partitionByFirstChar xs
+
+partitionByFirstChar :: [String] -> MultiMap.MultiMap Char String
+partitionByFirstChar [] = MultiMap.empty
+partitionByFirstChar ([]:xss) = partitionByFirstChar xss
+partitionByFirstChar ((x:xs):xss)
+  = MultiMap.insert x xs partitioned
+    where partitioned = partitionByFirstChar xss
