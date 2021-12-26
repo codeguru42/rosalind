@@ -1,5 +1,5 @@
 import Test.HUnit
-
+import Rosalind 
 
 testCat n expected = ("test cat " ++ show n) ~: expected ~=? cat n
 tests = test $ map (\(n, expected) -> testCat n expected) $ zip [0..20] allExpected
@@ -12,11 +12,8 @@ tests = test $ map (\(n, expected) -> testCat n expected) $ zip [0..20] allExpec
                     69533550916004, 263747951750360, 1002242216651368, 3814986502092304
                 ]
 
-fact n = product [1..n]
 
-binom n k = fact n `div` (fact k * fact (n - k))
-
-cat n = binom (2*n) n `div` (n+1)
+cat n = choose (2*n) n `div` (n+1)
 
 main = do
     runTestTT tests
