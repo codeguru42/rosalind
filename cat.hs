@@ -12,9 +12,11 @@ tests = test $ map (\(n, expected) -> testCat n expected) $ zip [0..20] allExpec
                     69533550916004, 263747951750360, 1002242216651368, 3814986502092304
                 ]
 
-cat 0 = 1
-cat 1 = 1
-cat n = sum [cat (k-1) * cat (n-k) | k <- [1..n]]
+fact n = product [1..n]
+
+binom n k = fact n `div` (fact k * fact (n - k))
+
+cat n = binom (2*n) n `div` (n+1)
 
 main = do
     runTestTT tests
