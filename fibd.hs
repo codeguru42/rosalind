@@ -21,6 +21,7 @@ testFibd = "Test fibd" ~: expected ~=? actual
           actual = map (\n -> fibd n 3) [1..10]
 
 main = do
+    runTestTT testFibd
     print $ fibd n m
     where n = 89
           m = 19
