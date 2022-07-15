@@ -6,6 +6,7 @@ authors = ["Code-Apprentice <codeguru42@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
+pytest = "^7.1.2"
 
 [tool.poetry.dev-dependencies]
 
