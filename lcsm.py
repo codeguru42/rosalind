@@ -54,7 +54,8 @@ def test_parse_fasta2():
 
 
 def main():
-    pass
+    with open('lcsm.txt') as file:
+        print(list(parse_fasta(file)))
 
 
 if __name__ == '__main__':
