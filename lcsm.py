@@ -1,5 +1,9 @@
+from rosalind import parse_fasta
+
+
 def main():
-    pass
+    with open('lcsm.txt') as file:
+        print(list(parse_fasta(file)))
 
 
 if __name__ == '__main__':
