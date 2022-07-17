@@ -13,6 +13,18 @@ def parse_fasta(fasta_file):
     yield nucleotide
 
 
+class Ukkonen:
+    def __init__(self, string):
+        self.string = string
+        self.position = 0
+        self.tree = {}
+
+    def step(self):
+        self.tree[(self.position, '#')] = {}
+        self.position += 1
+        return self.tree
+
+
 fasta = '''>Rosalind_1
 GATTACA
 >Rosalind_2
@@ -51,6 +63,39 @@ def test_parse_fasta2():
     ]
     dna = list(parse_fasta(io.StringIO(fasta2)))
     assert dna == expected
+
+
+def test_ukkonen_step1():
+    ukkonen = Ukkonen('abc')
+    result = ukkonen.step()
+    expected = {
+        (0, '#'): {},
+    }
+    assert expected == result
+
+
+def test_ukkonen_step2():
+    ukkonen = Ukkonen('abc')
+    ukkonen.step()
+    result = ukkonen.step()
+    expected = {
+        (0, '#'): {},
+        (1, '#'): {},
+    }
+    assert expected == result
+
+
+def test_ukkonen_step3():
+    ukkonen = Ukkonen('abc')
+    ukkonen.step()
+    ukkonen.step()
+    result = ukkonen.step()
+    expected = {
+        (0, '#'): {},
+        (1, '#'): {},
+        (2, '#'): {},
+    }
+    assert expected == result
 
 
 def main():
