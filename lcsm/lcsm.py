@@ -21,6 +21,11 @@ class Ukkonen:
         self.position += 1
         return self.tree
 
+    def make_suffix_tree(self):
+        while self.position < len(self.string):
+            self.step()
+        return self.tree
+
 
 def main():
     with open('lcsm.txt') as file:

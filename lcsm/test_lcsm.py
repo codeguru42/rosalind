@@ -73,3 +73,14 @@ def test_ukkonen_step3():
         (2, '#'): {},
     }
     assert expected == result
+
+
+def test_ukkonen_make_suffix_tree():
+    ukkonen = lcsm.Ukkonen('abc')
+    result = ukkonen.make_suffix_tree()
+    expected = {
+        (0, '#'): {},
+        (1, '#'): {},
+        (2, '#'): {},
+    }
+    assert expected == result
