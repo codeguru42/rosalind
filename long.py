@@ -101,6 +101,39 @@ def test_suffixes():
     assert result == expected
 
 
+def most_overlapping_pair(dnas):
+    max_a = ''
+    max_b = ''
+    max_overlap = ''
+    for a in dnas:
+        for b in dnas:
+            if a != b:
+                for suff in suffixes(a):
+                    pre = b[:len(suff)]
+                    if suff == pre and len(pre) > len(max_overlap):
+                        max_a = a
+                        max_b = b
+                        max_overlap = pre
+                        break
+    return max_a, max_b, max_overlap
+
+
+def test_most_overlapping_pair():
+    dnas = [
+        'ATTAGACCTG',
+        'CCTGCCGGAA',
+        'AGACCTGCCG',
+        'GCCGGAATAC',
+    ]
+    result = most_overlapping_pair(dnas)
+    expected = (
+        'ATTAGACCTG',
+        'AGACCTGCCG',
+        'AGACCTG',
+    )
+    assert result == expected
+
+
 def main():
     with open("long.txt") as file:
         fasta = parse_fasta(file)
