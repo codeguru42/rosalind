@@ -134,6 +134,28 @@ def test_most_overlapping_pair():
     assert result == expected
 
 
+def long(dnas):
+    temp = dnas.copy()
+    while len(temp) > 1:
+        a, b, overlap = most_overlapping_pair(temp)
+        temp.remove(a)
+        temp.remove(b)
+        temp.append(a + b[len(overlap):])
+    return temp[0]
+
+
+def test_long():
+    dnas = [
+        'ATTAGACCTG',
+        'CCTGCCGGAA',
+        'AGACCTGCCG',
+        'GCCGGAATAC',
+    ]
+    result = long(dnas)
+    expected = 'ATTAGACCTGCCGGAATAC'
+    assert result == expected
+
+
 def main():
     with open("long.txt") as file:
         fasta = parse_fasta(file)
