@@ -53,6 +53,30 @@ def test_parse_fasta2():
     assert dna == expected
 
 
+def prefixes(s):
+    n = len(s)
+    for i in range(n + 1):
+        yield s[:n - i]
+
+
+def test_prefixes():
+    result = list(prefixes('ATTAGACCTG'))
+    expected = [
+        'ATTAGACCTG',
+        'ATTAGACCT',
+        'ATTAGACC',
+        'ATTAGAC',
+        'ATTAGA',
+        'ATTAG',
+        'ATTA',
+        'ATT',
+        'AT',
+        'A',
+        '',
+    ]
+    assert result == expected
+
+
 def main():
     with open("long.txt") as file:
         fasta = parse_fasta(file)
