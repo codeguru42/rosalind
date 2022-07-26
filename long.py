@@ -56,7 +56,7 @@ def test_parse_fasta2():
 def prefixes(s):
     n = len(s)
     for i in range(n + 1):
-        yield s[:n - i]
+        yield s[:n-i]
 
 
 def test_prefixes():
@@ -72,6 +72,30 @@ def test_prefixes():
         'ATT',
         'AT',
         'A',
+        '',
+    ]
+    assert result == expected
+
+
+def suffixes(s):
+    n = len(s)
+    for i in range(n + 1):
+        yield s[i:]
+
+
+def test_suffixes():
+    result = list(suffixes('ATTAGACCTG'))
+    expected = [
+        'ATTAGACCTG',
+        'TTAGACCTG',
+        'TAGACCTG',
+        'AGACCTG',
+        'GACCTG',
+        'ACCTG',
+        'CCTG',
+        'CTG',
+        'TG',
+        'G',
         '',
     ]
     assert result == expected
