@@ -157,10 +157,9 @@ def test_long():
 
 
 def main():
-    with open("long.txt") as file:
+    with open("rosalind_long.txt") as file:
         fasta = parse_fasta(file)
-        for rna in fasta:
-            print(rna)
+        print(long(list(fasta)))
 
 
 if __name__ == '__main__':
