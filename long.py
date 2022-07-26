@@ -54,7 +54,10 @@ def test_parse_fasta2():
 
 
 def main():
-    pass
+    with open("long.txt") as file:
+        fasta = parse_fasta(file)
+        for rna in fasta:
+            print(rna)
 
 
 if __name__ == '__main__':
