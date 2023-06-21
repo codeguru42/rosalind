@@ -1,9 +1,9 @@
-def test_catalan1():
-    assert catalan('AUAU') == 2
+import pytest
 
 
-def test_catalan2():
-    assert catalan('UAGCGUGAUCAC') == 2
+@pytest.mark.parametrize("n,cat", [(0, 1), (2, 2), (4, 5), (6, 14)])
+def test_catalan(n, cat):
+    assert catalan(n) == cat
 
 
 def complement(base):
@@ -18,15 +18,14 @@ def complement(base):
     raise "Invalid base"
 
 
-def catalan(rna):
-    n = len(rna)
-    # cat[i][j] is the number of non-crossing matchings with an edge from rna[i] to rna[j]
-    cat = [[0] * n for _ in range(n)]
+def catalan(n):
+    cat = [0] * (n//2+2)  # so I don't have to deal with IndexError when n == 0
 
-    cat[0][0] = 1
-    for i in range(1, n):
-        for j in range(1, n):
-            cat[i] = sum(cat[k-1] * cat[n-k] if rna[i] == complement(rna[k]) else 0 for k in range(1, n))
+    cat[0] = 1
+    cat[1] = 1
+    for i in range(2, n//2+2):
+        for k in range(1, i+1):
+            cat[i] += cat[k-1] * cat[i-k]
 
     return cat[-1]
 
