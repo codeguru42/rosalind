@@ -7,18 +7,9 @@
 import Rosalind
 import Data.List.Split (splitOn)
 
-logProb :: String -> Double -> Double
-logProb dna gc = sum $ map (flip (defaultLookup 0) logs) dna 
-    where logGC = logBase 10 gc - logBase 10 2.0
-          logAT = logBase 10 (1 - gc) - logBase 10 2.0
-          logs = [ ('A', logAT)
-                 , ('T', logAT)
-                 , ('G', logGC)
-                 , ('C', logGC)] 
-
 main = do
     contents <- readFile "prob.txt"
     let ls = lines contents
     let dna = ls !! 0
     let gcs = map read . splitOn " " $ ls !! 1 :: [Double]
-    putStrLn . format $ map (logProb dna) gcs
+    putStrLn . format $ map (Rosalind.logProb dna) gcs
