@@ -37,13 +37,15 @@ library:
   source-dirs: src
 
 executables:
+  eval:
+    main:               Main.hs
+    source-dirs:        eval
   prob:
     main:               Main.hs
     source-dirs:        prob
     dependencies:
       - rosalind
       - split
-
   rstr:
     main:               Main.hs
     source-dirs:        rstr
