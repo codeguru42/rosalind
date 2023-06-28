@@ -47,6 +47,8 @@ executables:
   rstr:
     main:               Main.hs
     source-dirs:        rstr
+    dependencies:
+      - rosalind
 
 tests:
   rosalind-test:
