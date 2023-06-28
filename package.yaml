@@ -40,6 +40,8 @@ executables:
   eval:
     main:               Main.hs
     source-dirs:        eval
+    dependencies:
+      - split
   prob:
     main:               Main.hs
     source-dirs:        prob
