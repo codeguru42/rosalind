@@ -44,6 +44,10 @@ executables:
       - rosalind
       - split
 
+  rstr:
+    main:               Main.hs
+    source-dirs:        rstr
+
 tests:
   rosalind-test:
     main:                Spec.hs
