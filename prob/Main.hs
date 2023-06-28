@@ -7,6 +7,7 @@
 import Rosalind
 import Data.List.Split (splitOn)
 
+main :: IO ()
 main = do
     contents <- readFile "prob.txt"
     let ls = lines contents
