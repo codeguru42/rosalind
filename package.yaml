@@ -46,6 +46,12 @@ executables:
     - -with-rtsopts=-N
     dependencies:
     - rosalind
+  prob:
+    main:               Main.hs
+    source-dirs:        prob
+    dependencies:
+      - rosalind
+      - split
 
 tests:
   rosalind-test:
