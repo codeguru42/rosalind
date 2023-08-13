@@ -33,16 +33,16 @@ def complement(base):
 
 def catalan_rna(rna):
     n = len(rna)
-    cat = [0] * (n//2+2)  # so I don't have to deal with IndexError when n == 0
+    cat = [0] * (n+2)  # so I don't have to deal with IndexError when n == 0
 
     cat[0] = 1
     cat[1] = 1
-    for i in range(2, n//2+2):
+    for i in range(2, n+1):
         for k in range(1, i+1):
             if rna[k-1] == complement(rna[i-k]):
                 cat[i] += cat[k-1] * cat[i-k]
 
-    return cat[-1]
+    return cat[-2]
 
 
 def catalan(n):
