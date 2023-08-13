@@ -11,7 +11,7 @@ catalan_numbers = [
 
 @pytest.mark.parametrize("n,cat", enumerate(catalan_numbers))
 def test_catalan(n, cat):
-    assert catalan(2*n) == cat
+    assert catalan(n) == cat
 
 
 @pytest.mark.parametrize("rna,cat", [('AUAU', 2), ('UAGCGUGAUCAC', 2)])
@@ -46,15 +46,15 @@ def catalan_rna(rna):
 
 
 def catalan(n):
-    cat = [0] * (n//2+2)  # so I don't have to deal with IndexError when n == 0
+    cat = [0] * (n+2)  # so I don't have to deal with IndexError when n == 0
 
     cat[0] = 1
     cat[1] = 1
-    for i in range(2, n//2+2):
+    for i in range(2, n+1):
         for k in range(1, i+1):
             cat[i] += cat[k-1] * cat[i-k]
 
-    return cat[-1]
+    return cat[-2]
 
 
 def main():
