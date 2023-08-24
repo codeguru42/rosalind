@@ -1,3 +1,5 @@
+import functools
+
 import pytest
 
 catalan_numbers = [
@@ -31,18 +33,18 @@ def complement(base):
     raise "Invalid base"
 
 
+@functools.cache
 def catalan_rna(rna):
     n = len(rna)
-    cat = [0] * (n+2)  # so I don't have to deal with IndexError when n == 0
+    if n == 0 or n == 1:
+        return 1
 
-    cat[0] = 1
-    cat[1] = 1
-    for i in range(2, n+1):
-        for k in range(1, i+1):
-            if rna[k-1] == complement(rna[i-k]):
-                cat[i] += cat[k-1] * cat[i-k]
+    cat = 0
+    for j in range(1, n):
+        if rna[0] == complement(rna[j]):
+            cat += catalan_rna(rna[1:j]) * catalan_rna(rna[j + 1:])
 
-    return cat[-2]
+    return cat
 
 
 def catalan(n):
