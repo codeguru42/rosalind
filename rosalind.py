@@ -1,4 +1,6 @@
+import collections
 import io
+import itertools
 
 
 def parse_fasta(fasta_file):
@@ -50,3 +52,13 @@ def test_parse_fasta2():
     ]
     dna = list(parse_fasta(io.StringIO(fasta2)))
     assert dna == expected
+
+
+def sliding_window(iterable, n):
+    """Collect data into overlapping fixed-length chunks or blocks."""
+    """sliding_window('ABCDEFG', 4) --> ABCD BCDE CDEF DEFG"""
+    it = iter(iterable)
+    window = collections.deque(itertools.islice(it, n - 1), maxlen=n)
+    for x in it:
+        window.append(x)
+        yield tuple(window)
