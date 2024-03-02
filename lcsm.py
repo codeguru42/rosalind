@@ -1,3 +1,5 @@
+from typing import Generator
+
 from rosalind import parse_fasta
 
 
@@ -48,12 +50,12 @@ def longest_common_substring(s: str, t: str) -> set[str]:
     return ret
 
 
-def suffix_array(s: str) -> list[int]:
+def suffix_array(s: str) -> Generator[int]:
     for i, _ in sorted(suffixes(s), key=lambda x: x[1]):
         yield i
 
 
-def suffixes(s):
+def suffixes(s: str) -> Generator[tuple[int, str]]:
     for i in range(len(s)):
         yield i, s[i:]
 
