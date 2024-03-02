@@ -17,6 +17,13 @@ def test_longest_common_substring2():
     assert result == expected
 
 
+def test_suffix_array():
+    s = "ababbab"
+    expected = [5, 0, 2, 6, 4, 1, 3]
+    actual = list(suffix_array(s))
+    assert expected == actual
+
+
 def longest_common_substring(s: str, t: str) -> set[str]:
     r = len(s)
     n = len(t)
@@ -39,6 +46,16 @@ def longest_common_substring(s: str, t: str) -> set[str]:
             else:
                 L[i][j] = 0
     return ret
+
+
+def suffix_array(s: str) -> list[int]:
+    for i, _ in sorted(suffixes(s), key=lambda x: x[1]):
+        yield i
+
+
+def suffixes(s):
+    for i in range(len(s)):
+        yield i, s[i:]
 
 
 def main():
