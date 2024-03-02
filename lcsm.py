@@ -1,7 +1,7 @@
 from rosalind import parse_fasta
 
 
-def test_longest_common_substring():
+def test_longest_common_substring1():
     a = "GATTACA"
     b = "TAGACCA"
     result = longest_common_substring(a, b)
@@ -9,10 +9,18 @@ def test_longest_common_substring():
     assert result == expected
 
 
-def longest_common_substring(s, t):
+def test_longest_common_substring2():
+    a = "GATTACA"
+    b = "ATACA"
+    result = longest_common_substring(a, b)
+    expected = {"TACA"}
+    assert result == expected
+
+
+def longest_common_substring(s: str, t: str) -> set[str]:
     r = len(s)
     n = len(t)
-    L = [[0] * r for _ in range(n)]
+    L = [[0] * n for _ in range(r)]
     z = 0
     ret = set()
 
