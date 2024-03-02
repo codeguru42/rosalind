@@ -1,6 +1,6 @@
-from typing import Generator
+from collections.abc import Generator
 
-from rosalind import parse_fasta
+from rosalind import parse_fasta, sliding_window
 
 
 def test_longest_common_substring1():
@@ -23,6 +23,13 @@ def test_suffix_array():
     s = "ababbab"
     expected = [5, 0, 2, 6, 4, 1, 3]
     actual = list(suffix_array(s))
+    assert expected == actual
+
+
+def test_longest_common_prefix_array():
+    s = "ababbab"
+    expected = [0, 2, 2, 0, 1, 3, 1]
+    actual = list(longest_common_prefix_array(s))
     assert expected == actual
 
 
@@ -58,6 +65,26 @@ def suffix_array(s: str) -> Generator[int]:
 def suffixes(s: str) -> Generator[tuple[int, str]]:
     for i in range(len(s)):
         yield i, s[i:]
+
+
+def longest_common_prefix_array(s: str) -> Generator[int]:
+    yield 0
+    for i, j in sliding_window(list(suffix_array(s)), 2):
+        suff1 = s[i:]
+        suff2 = s[j:]
+        prefix = common_prefix(suff1, suff2)
+        yield len(prefix)
+
+
+def common_prefix(s1: str, s2: str) -> str:
+    def prefix_generator(s1: str, s2: str) -> Generator[str]:
+        for c1, c2 in zip(s1, s2):
+            if c1 == c2:
+                yield c1
+            else:
+                break
+
+    return "".join(prefix_generator(s1, s2))
 
 
 def main():
