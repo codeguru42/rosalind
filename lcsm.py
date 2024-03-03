@@ -58,13 +58,7 @@ def longest_common_substring(s: str, t: str) -> set[str]:
 
 
 def suffix_array(s: str) -> Generator[int]:
-    for i, _ in sorted(suffixes(s), key=lambda x: x[1]):
-        yield i
-
-
-def suffixes(s: str) -> Generator[tuple[int, str]]:
-    for i in range(len(s)):
-        yield i, s[i:]
+    yield from sorted(range(len(s)), key=lambda x: s[x:])
 
 
 def longest_common_prefix_array(s: str) -> Generator[int]:
