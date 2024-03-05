@@ -64,8 +64,9 @@ def longest_common_substring(*strings: str) -> set[str]:
             if lcp > lcs_length:
                 lcs = set()
                 lcs_length = lcp
-            window_suff_idxs = [suff_idx for _, suff_idx, _, _ in window]
-            lcs.add(all_strings[window_suff_idxs[0] : window_suff_idxs[0] + lcp])
+            if lcp == lcs_length:
+                window_suff_idxs = [suff_idx for _, suff_idx, _, _ in window]
+                lcs.add(all_strings[window_suff_idxs[0] : window_suff_idxs[0] + lcp])
             top += 1
     return lcs
 
