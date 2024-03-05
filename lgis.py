@@ -25,7 +25,11 @@ def longest_increasing_subsequence(sequence: list[int]) -> list[int]:
 
 def main():
     with open("rosalind_lgis.txt") as file:
-        print(parse(file))
+        sequence = parse(file)
+        increasing = longest_increasing_subsequence(sequence)
+        print(" ".join(str(n) for n in increasing))
+        decreasing = longest_increasing_subsequence(sequence[::-1])[::-1]
+        print(" ".join(str(n) for n in decreasing))
 
 
 if __name__ == "__main__":
