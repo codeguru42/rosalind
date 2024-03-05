@@ -33,28 +33,55 @@ def test_longest_common_prefix_array():
     assert expected == actual
 
 
-def longest_common_substring(s: str, t: str) -> set[str]:
-    r = len(s)
-    n = len(t)
-    L = [[0] * n for _ in range(r)]
-    z = 0
-    ret = set()
+def longest_common_substring(*strings: str) -> set[str]:
+    lcs = set()
+    n = len(strings)
+    all_strings = "".join(s + chr(i) for i, s in enumerate(strings))
+    sentinels = list(sentinel_indexes(*strings))
+    suff_idxs = list(suffix_array(all_strings))
+    lcps = longest_common_prefix_array(all_strings)
+    colors = [get_color(i, sentinels) for i in suff_idxs]
+    suffs = [all_strings[i:] for i in suff_idxs]
+    search_list = list(
+        zip(
+            lcps,
+            suff_idxs,
+            colors,
+            suffs,
+        )
+    )
+    top = 0
+    bottom = 1
+    lcs_length = 0
+    while top < len(search_list) and bottom < len(search_list):
+        window = search_list[top:bottom]
+        color_count = len(set(color for _, _, color, _ in window))
+        if color_count < n:
+            bottom += 1
+            continue
+        if color_count == n:
+            lcp = min(lcp for lcp, _, _, _ in window[1:])
+            if lcp > lcs_length:
+                lcs = set()
+                lcs_length = lcp
+            window_suff_idxs = [suff_idx for _, suff_idx, _, _ in window]
+            lcs.add(all_strings[window_suff_idxs[0] : window_suff_idxs[0] + lcp])
+            top += 1
+    return lcs
 
-    for i in range(r):
-        for j in range(n):
-            if s[i] == t[j]:
-                if i == 0 or j == 0:
-                    L[i][j] = 1
-                else:
-                    L[i][j] = L[i - 1][j - 1] + 1
-                if L[i][j] > z:
-                    z = L[i][j]
-                    ret = {s[i - z + 1 : i + 1]}
-                elif L[i][j] == z:
-                    ret.add(s[i - z + 1 : i + 1])
-            else:
-                L[i][j] = 0
-    return ret
+
+def sentinel_indexes(s1, *strings: str) -> Generator[int]:
+    i = len(s1)
+    yield i
+    for s in strings:
+        i += len(s) + 1
+        yield i
+
+
+def get_color(idx, sentinels):
+    for i, s_idx in enumerate(sentinels):
+        if idx <= s_idx:
+            return i
 
 
 def suffix_array(s: str) -> Generator[int]:
