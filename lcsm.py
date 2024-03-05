@@ -110,8 +110,10 @@ def common_prefix(s1: str, s2: str) -> str:
 
 
 def main():
-    with open("lcsm.txt") as file:
-        print(list(parse_fasta(file)))
+    with open("rosalind_lcsm.txt") as file:
+        dnas = list(parse_fasta(file))
+        for lcsm in longest_common_substring(*dnas):
+            print(lcsm)
 
 
 if __name__ == "__main__":
