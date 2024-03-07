@@ -2,7 +2,14 @@ def test_longest_increasing_subsequence():
     sequence = [5, 1, 4, 2, 3]
     expected = [1, 2, 3]
     actual = longest_increasing_subsequence(sequence)
-    assert expected == actual
+    assert actual == expected
+
+
+def test_longest_decreasing_subsequence():
+    sequence = [5, 1, 4, 2, 3]
+    expected = [5, 4, 3]
+    actual = longest_decreasing_subsequence(sequence)
+    assert actual == expected
 
 
 def parse(file):
@@ -13,14 +20,15 @@ def parse(file):
 def longest_increasing_subsequence(sequence: list[int]) -> list[int]:
     subsequences = [[] for _ in range(len(sequence))]
     for i in range(len(sequence)):
-        found = False
-        for j in range(i):
-            if sequence[j] < sequence[i]:
-                subsequences[i] = [*subsequences[j], sequence[i]]
-                found = True
-        if not found:
-            subsequences[i] = [sequence[i]]
+        subs = [
+            sub for j, sub in enumerate(subsequences[:i]) if sequence[j] < sequence[i]
+        ]
+        subsequences[i] = max(subs, key=len, default=[]) + [sequence[i]]
     return subsequences[-1]
+
+
+def longest_decreasing_subsequence(sequence):
+    return longest_increasing_subsequence(sequence[::-1])[::-1]
 
 
 def main():
@@ -28,7 +36,7 @@ def main():
         sequence = parse(file)
         increasing = longest_increasing_subsequence(sequence)
         print(" ".join(str(n) for n in increasing))
-        decreasing = longest_increasing_subsequence(sequence[::-1])[::-1]
+        decreasing = longest_decreasing_subsequence(sequence)
         print(" ".join(str(n) for n in decreasing))
 
 
