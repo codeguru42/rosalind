@@ -12,6 +12,13 @@ def test_longest_increasing_subsequence2():
     assert actual == expected
 
 
+def test_longest_increasing_subsequence3():
+    sequence = [1, 3, 6, 7, 9, 4, 10, 5, 6]
+    expected = [1, 3, 6, 7, 9, 10]
+    actual = longest_increasing_subsequence(sequence)
+    assert actual == expected
+
+
 def test_longest_decreasing_subsequence1():
     sequence = [5, 1, 4, 2, 3]
     expected = [5, 4, 3]
@@ -38,7 +45,7 @@ def longest_increasing_subsequence(sequence: list[int]) -> list[int]:
             sub for j, sub in enumerate(subsequences[:i]) if sequence[j] < sequence[i]
         ]
         subsequences[i] = max(subs, key=len, default=[]) + [sequence[i]]
-    return subsequences[-1]
+    return max(subsequences, key=len, default=[])
 
 
 def longest_decreasing_subsequence(sequence):
