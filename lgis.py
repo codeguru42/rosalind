@@ -1,13 +1,27 @@
-def test_longest_increasing_subsequence():
+def test_longest_increasing_subsequence1():
     sequence = [5, 1, 4, 2, 3]
     expected = [1, 2, 3]
     actual = longest_increasing_subsequence(sequence)
     assert actual == expected
 
 
-def test_longest_decreasing_subsequence():
+def test_longest_increasing_subsequence2():
+    sequence = [8, 2, 1, 6, 5, 7, 4, 3, 9]
+    expected = [2, 6, 7, 9]
+    actual = longest_increasing_subsequence(sequence)
+    assert actual == expected
+
+
+def test_longest_decreasing_subsequence1():
     sequence = [5, 1, 4, 2, 3]
     expected = [5, 4, 3]
+    actual = longest_decreasing_subsequence(sequence)
+    assert actual == expected
+
+
+def test_longest_decreasing_subsequence2():
+    sequence = [8, 2, 1, 6, 5, 7, 4, 3, 9]
+    expected = [8, 6, 5, 4, 3]
     actual = longest_decreasing_subsequence(sequence)
     assert actual == expected
 
