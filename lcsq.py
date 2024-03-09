@@ -40,7 +40,7 @@ def longest_common_subsequence(str1: str, str2: str) -> str:
 def main(filename: str):
     with open(filename, "r") as file:
         dnas = parse_fasta(file)
-        print(list(dnas))
+        print(longest_common_subsequence(*dnas))
 
 
 if __name__ == "__main__":
