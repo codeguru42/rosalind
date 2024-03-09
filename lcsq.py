@@ -1,9 +1,12 @@
 import typer
 
+from rosalind import parse_fasta
+
 
 def main(filename: str):
     with open(filename, "r") as file:
-        print(file.readlines())
+        dnas = parse_fasta(file)
+        print(list(dnas))
 
 
 if __name__ == "__main__":
