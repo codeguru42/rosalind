@@ -6,7 +6,7 @@ from rosalind import parse_fasta
 def test_longest_common_subsequence1():
     a = "AACCTTGG"
     b = "ACACTGTGA"
-    expected = "AACTGG"
+    expected = "AACTTG"
     result = longest_common_subsequence(a, b)
     assert result == expected
 
@@ -28,8 +28,8 @@ def longest_common_subsequence(str1: str, str2: str) -> str:
             if str1[i] == str2[j]:
                 subsequences[i + 1][j + 1] = subsequences[i][j] + str1[i]
             else:
-                sub1 = subsequences[i][j - 1]
-                sub2 = subsequences[i - 1][j]
+                sub1 = subsequences[i][j + 1]
+                sub2 = subsequences[i + 1][j]
                 if len(sub1) >= len(sub2):
                     subsequences[i + 1][j + 1] = sub1
                 else:
