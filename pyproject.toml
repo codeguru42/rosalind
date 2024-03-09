@@ -8,6 +8,7 @@ authors = ["codeguru <codeguru42@gmail.com>"]
 python = "^3.10"
 pytest = "^7.1.2"
 black = "^23.10.0"
+typer = "^0.9.0"
 
 [tool.poetry.dev-dependencies]
 
