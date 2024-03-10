@@ -48,10 +48,33 @@ def test_tokenizer_number():
     assert tokenizer.next_token() == (TokenType.NUMBER, "123")
 
 
+def test_tokenizer_iter():
+    s = "(a,b)c;"
+    expected = [
+        (TokenType.LEFT_PAREN, "("),
+        (TokenType.NAME, "a"),
+        (TokenType.COMMA, ","),
+        (TokenType.NAME, "b"),
+        (TokenType.RIGHT_PAREN, ")"),
+        (TokenType.NAME, "c"),
+        (TokenType.SEMICOLON, ";"),
+    ]
+    tokenizer = Tokenizer(s)
+    assert list(tokenizer) == expected
+
+
 class Tokenizer:
     def __init__(self, s: str):
         self.s = s
         self.i = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.i >= len(self.s):
+            raise StopIteration
+        return self.next_token()
 
     def next_token(self) -> tuple[TokenType, str]:
         if self.i >= len(self.s):
