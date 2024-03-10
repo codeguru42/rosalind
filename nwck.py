@@ -136,6 +136,9 @@ class Leaf:
     def __eq__(self, other):
         return self.name == other.name
 
+    def __repr__(self):
+        return f"Leaf({self.name=!r})"
+
 
 class Internal:
     def __init__(self, branch_set: "BranchSet", name: str):
@@ -144,6 +147,9 @@ class Internal:
 
     def __eq__(self, other):
         return self.branch_set == other.branch_set and self.name == other.name
+
+    def __repr__(self):
+        return f"Internal({self.branch_set=!r}, {self.name=!r})"
 
 
 class Branch:
@@ -154,6 +160,9 @@ class Branch:
     def __eq__(self, other):
         return self.subtree == other.subtree and self.length == other.length
 
+    def __repr__(self):
+        return f"Branch({self.subtree=!r}, {self.length=!r})"
+
 
 class BranchSet:
     def __init__(self, branches: list[Branch]):
@@ -162,6 +171,9 @@ class BranchSet:
     def __eq__(self, other):
         return self.branches == other.branches
 
+    def __repr__(self):
+        return f"BranchSet({self.branches=!r})"
+
 
 class Tree:
     def __init__(self, subtree: Internal | Leaf):
@@ -169,6 +181,9 @@ class Tree:
 
     def __eq__(self, other):
         return self.subtree == other.subtree
+
+    def __repr__(self):
+        return f"Tree({self.subtree=!r})"
 
 
 class Parser:
