@@ -1,3 +1,4 @@
+from collections.abc import Iterator
 from enum import Enum
 
 import pytest
@@ -63,6 +64,24 @@ def test_tokenizer_iter():
     assert list(tokenizer) == expected
 
 
+def test_parser():
+    s = "(a:1,b:2)c;"
+    parser = Parser(s)
+    actual = parser.parse_tree()
+    expected = Tree(
+        Internal(
+            BranchSet(
+                [
+                    Branch(Leaf("a"), 1),
+                    Branch(Leaf("b"), 2),
+                ]
+            ),
+            "c",
+        )
+    )
+    assert expected == actual
+
+
 class Tokenizer:
     def __init__(self, s: str):
         self.s = s
@@ -108,6 +127,117 @@ class Tokenizer:
                     return TokenType.NUMBER, self.s[start : self.i]
                 else:
                     raise ValueError(f"Unexpected character: {c}")
+
+
+class Leaf:
+    def __init__(self, name: str):
+        self.name = name
+
+    def __eq__(self, other):
+        return self.name == other.name
+
+
+class Internal:
+    def __init__(self, branch_set: "BranchSet", name: str):
+        self.branch_set = branch_set
+        self.name = name
+
+    def __eq__(self, other):
+        return self.branch_set == other.branch_set and self.name == other.name
+
+
+class Branch:
+    def __init__(self, subtree: Internal | Leaf, length: int = 1):
+        self.subtree = subtree
+        self.length = length
+
+    def __eq__(self, other):
+        return self.subtree == other.subtree and self.length == other.length
+
+
+class BranchSet:
+    def __init__(self, branches: list[Branch]):
+        self.branches = branches
+
+    def __eq__(self, other):
+        return self.branches == other.branches
+
+
+class Tree:
+    def __init__(self, subtree: Internal | Leaf):
+        self.subtree = subtree
+
+    def __eq__(self, other):
+        return self.subtree == other.subtree
+
+
+class Parser:
+    def __init__(self, s: str):
+        self.tokens = Tokenizer(s)
+        self.nextToken = next(self.tokens)
+        self.at_eof = False
+
+    def match(self, token_type: TokenType) -> bool:
+        if self.check(token_type):
+            self.advance()
+            return True
+        return False
+
+    def check(self, token_type: TokenType) -> bool:
+        return not self.at_eof and token_type == self.nextToken[0]
+
+    def advance(self):
+        try:
+            self.nextToken = next(self.tokens)
+        except StopIteration:
+            self.at_eof = True
+
+    def parse_tree(self) -> Tree:
+        subtree = self.parse_subtree()
+        if not self.match(TokenType.SEMICOLON):
+            raise ValueError("Expected semicolon")
+        if not self.at_eof:
+            raise ValueError(f"Unexpected characters at end of input: {self.nextToken}")
+        return Tree(subtree)
+
+    def parse_subtree(self) -> Internal | Leaf:
+        if self.match(TokenType.LEFT_PAREN):
+            return self.parse_internal()
+        name_token = self.nextToken
+        if self.match(TokenType.NAME):
+            return Leaf(name_token[1])
+        raise ValueError(f"Unexpected token: {self.nextToken}")
+
+    def parse_internal(self) -> Internal:
+        branch_set = self.parse_branch_set()
+        if not self.match(TokenType.RIGHT_PAREN):
+            raise ValueError("Expected right parenthesis")
+        name = self.nextToken
+        if self.match(TokenType.NAME):
+            return Internal(branch_set, name[1])
+
+    def parse_branch_set(self) -> BranchSet:
+        branches = list(self.parse_branches())
+        return BranchSet(branches)
+
+    def parse_branches(self) -> Iterator[Branch]:
+        while not self.check(TokenType.RIGHT_PAREN):
+            yield self.parse_branch()
+            if not self.match(TokenType.COMMA):
+                break
+
+    def parse_branch(self) -> Branch:
+        subtree = self.parse_subtree()
+        if self.match(TokenType.COLON):
+            length = self.parse_length()
+            return Branch(subtree, length)
+        return Branch(subtree)
+
+    def parse_length(self) -> int:
+        length_token = self.nextToken
+        if not self.match(TokenType.NUMBER):
+            raise ValueError("Expected number")
+        return int(length_token[1])
 
 
 def main(filename: str):
