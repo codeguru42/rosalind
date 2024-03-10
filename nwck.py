@@ -257,7 +257,15 @@ class Parser:
 
 def main(filename: str):
     with open(filename) as file:
-        print(file.readlines())
+        try:
+            while True:
+                tree = Parser(file.readline().strip()).parse_tree()
+                nodes = file.readline().strip().split()
+                file.readline()
+                print(tree)
+                print(nodes)
+        except StopIteration:
+            pass
 
 
 if __name__ == "__main__":
