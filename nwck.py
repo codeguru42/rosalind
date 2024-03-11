@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from collections.abc import Iterator
 from enum import Enum
 from typing import Optional
@@ -100,6 +101,21 @@ def test_parser2():
     assert expected == actual
 
 
+def test_build_tree():
+    s = "(a:1,b:2)c;"
+    parser = Parser(s)
+    tree = parser.parse_tree()
+    visitor = TreeVisitor()
+    actual = visitor.make_tree(tree)
+    expected = {
+        "c": [
+            "a",
+            "b",
+        ]
+    }
+    assert expected == actual
+
+
 def test_str():
     s = "(a:1,b:2)c;"
     parser = Parser(s)
@@ -168,6 +184,9 @@ class Leaf:
     def __str__(self):
         return self.name
 
+    def accept(self, visitor: "Visitor"):
+        return visitor.visit_leaf(self)
+
 
 class Internal:
     def __init__(self, branch_set: "BranchSet", name: Optional[str] = None):
@@ -182,6 +201,9 @@ class Internal:
 
     def __str__(self):
         return f"({self.branch_set!s}){self.name or ''}"
+
+    def accept(self, visitor: "Visitor"):
+        return visitor.visit_internal(self)
 
 
 class Branch:
@@ -198,6 +220,9 @@ class Branch:
     def __repr__(self):
         return f"Branch({self.subtree=!r}, {self.length=!r})"
 
+    def accept(self, visitor: "Visitor"):
+        return visitor.visit_branch(self)
+
 
 class BranchSet:
     def __init__(self, branches: list[Branch]):
@@ -212,6 +237,9 @@ class BranchSet:
     def __str__(self):
         return ",".join(map(str, self.branches))
 
+    def accept(self, visitor: "Visitor"):
+        return visitor.visit_branch_set(self)
+
 
 class Tree:
     def __init__(self, subtree: Internal | Leaf):
@@ -225,6 +253,9 @@ class Tree:
 
     def __str__(self):
         return f"{self.subtree!s};"
+
+    def accept(self, visitor: "Visitor"):
+        return visitor.visit_tree(self)
 
 
 class Parser:
@@ -297,6 +328,50 @@ class Parser:
         return int(length_token[1])
 
 
+class Visitor(ABC):
+    @abstractmethod
+    def visit_tree(self, tree: Tree):
+        pass
+
+    @abstractmethod
+    def visit_internal(self, internal: Internal):
+        pass
+
+    @abstractmethod
+    def visit_leaf(self, leaf: Leaf):
+        pass
+
+    @abstractmethod
+    def visit_branch_set(self, branch_set: BranchSet):
+        pass
+
+    @abstractmethod
+    def visit_branch(self, branch: Branch):
+        pass
+
+
+class TreeVisitor(Visitor):
+    def make_tree(self, tree: Tree):
+        return tree.accept(self)
+
+    def visit_tree(self, tree: Tree):
+        return tree.subtree.accept(self)
+
+    def visit_internal(self, internal: Internal):
+        neighbors = internal.branch_set.accept(self)
+        name = internal.name if internal.name else f"({','.join(neighbors)})"
+        return {name: neighbors}
+
+    def visit_leaf(self, leaf: Leaf):
+        return leaf.name
+
+    def visit_branch_set(self, branch_set: BranchSet):
+        return [branch.accept(self) for branch in branch_set.branches]
+
+    def visit_branch(self, branch: Branch):
+        return branch.subtree.accept(self)
+
+
 def main(filename: str):
     with open(filename) as file:
         try:
@@ -304,7 +379,7 @@ def main(filename: str):
                 tree = Parser(file.readline().strip()).parse_tree()
                 nodes = file.readline().strip().split()
                 file.readline()
-                print(tree)
+                print(repr(tree))
                 print(nodes)
         except StopIteration:
             pass
