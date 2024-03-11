@@ -100,6 +100,14 @@ def test_parser2():
     assert expected == actual
 
 
+def test_str():
+    s = "(a:1,b:2)c;"
+    parser = Parser(s)
+    actual = str(parser.parse_tree())
+    expected = s
+    assert expected == actual
+
+
 class Tokenizer:
     def __init__(self, s: str):
         self.s = s
@@ -157,6 +165,9 @@ class Leaf:
     def __repr__(self):
         return f"Leaf({self.name=!r})"
 
+    def __str__(self):
+        return self.name
+
 
 class Internal:
     def __init__(self, branch_set: "BranchSet", name: Optional[str] = None):
@@ -169,6 +180,9 @@ class Internal:
     def __repr__(self):
         return f"Internal({self.branch_set=!r}, {self.name=!r})"
 
+    def __str__(self):
+        return f"({self.branch_set!s}){self.name or ''}"
+
 
 class Branch:
     def __init__(self, subtree: Internal | Leaf, length: int = 1):
@@ -177,6 +191,9 @@ class Branch:
 
     def __eq__(self, other):
         return other and self.subtree == other.subtree and self.length == other.length
+
+    def __str__(self):
+        return f"{self.subtree!s}:{self.length}"
 
     def __repr__(self):
         return f"Branch({self.subtree=!r}, {self.length=!r})"
@@ -192,6 +209,9 @@ class BranchSet:
     def __repr__(self):
         return f"BranchSet({self.branches=!r})"
 
+    def __str__(self):
+        return ",".join(map(str, self.branches))
+
 
 class Tree:
     def __init__(self, subtree: Internal | Leaf):
@@ -202,6 +222,9 @@ class Tree:
 
     def __repr__(self):
         return f"Tree({self.subtree=!r})"
+
+    def __str__(self):
+        return f"{self.subtree!s};"
 
 
 class Parser:
