@@ -1,5 +1,6 @@
 from collections.abc import Iterator
 from enum import Enum
+from typing import Optional
 
 import pytest
 import typer
@@ -64,7 +65,7 @@ def test_tokenizer_iter():
     assert list(tokenizer) == expected
 
 
-def test_parser():
+def test_parser1():
     s = "(a:1,b:2)c;"
     parser = Parser(s)
     actual = parser.parse_tree()
@@ -78,6 +79,23 @@ def test_parser():
             ),
             "c",
         )
+    )
+    assert expected == actual
+
+
+def test_parser2():
+    s = "(a,b);"
+    parser = Parser(s)
+    actual = parser.parse_tree()
+    expected = Tree(
+        Internal(
+            BranchSet(
+                [
+                    Branch(Leaf("a"), 1),
+                    Branch(Leaf("b"), 1),
+                ]
+            )
+        ),
     )
     assert expected == actual
 
@@ -134,19 +152,19 @@ class Leaf:
         self.name = name
 
     def __eq__(self, other):
-        return self.name == other.name
+        return other and self.name == other.name
 
     def __repr__(self):
         return f"Leaf({self.name=!r})"
 
 
 class Internal:
-    def __init__(self, branch_set: "BranchSet", name: str):
+    def __init__(self, branch_set: "BranchSet", name: Optional[str] = None):
         self.branch_set = branch_set
         self.name = name
 
     def __eq__(self, other):
-        return self.branch_set == other.branch_set and self.name == other.name
+        return other and self.branch_set == other.branch_set and self.name == other.name
 
     def __repr__(self):
         return f"Internal({self.branch_set=!r}, {self.name=!r})"
@@ -158,7 +176,7 @@ class Branch:
         self.length = length
 
     def __eq__(self, other):
-        return self.subtree == other.subtree and self.length == other.length
+        return other and self.subtree == other.subtree and self.length == other.length
 
     def __repr__(self):
         return f"Branch({self.subtree=!r}, {self.length=!r})"
@@ -169,7 +187,7 @@ class BranchSet:
         self.branches = branches
 
     def __eq__(self, other):
-        return self.branches == other.branches
+        return other and self.branches == other.branches
 
     def __repr__(self):
         return f"BranchSet({self.branches=!r})"
@@ -180,7 +198,7 @@ class Tree:
         self.subtree = subtree
 
     def __eq__(self, other):
-        return self.subtree == other.subtree
+        return other and self.subtree == other.subtree
 
     def __repr__(self):
         return f"Tree({self.subtree=!r})"
@@ -230,6 +248,7 @@ class Parser:
         name = self.nextToken
         if self.match(TokenType.NAME):
             return Internal(branch_set, name[1])
+        return Internal(branch_set)
 
     def parse_branch_set(self) -> BranchSet:
         branches = list(self.parse_branches())
