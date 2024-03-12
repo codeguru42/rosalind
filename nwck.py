@@ -116,6 +116,20 @@ def test_build_tree():
     assert expected == actual
 
 
+def test_distance_visitor1():
+    tree = Parser("(a,b)c;").parse_tree()
+    actual = DepthVisitor().get_depth(tree, "a")
+    expected = 1
+    assert expected == actual
+
+
+def test_distance_visitor2():
+    tree = Parser("(a,(b,c))d;").parse_tree()
+    actual = DepthVisitor().get_depth(tree, "b")
+    expected = 2
+    assert expected == actual
+
+
 def test_dist():
     tree = {
         "c": [
@@ -370,23 +384,28 @@ class Visitor(ABC):
         pass
 
 
-class TreeVisitor(Visitor):
-    def make_tree(self, tree: Tree):
-        return tree.accept(self), tree.subtree.name
+class DepthVisitor(Visitor):
+    def get_depth(self, tree: Tree, node: str) -> int:
+        self.depth = 0
+        self.node = node
+        tree.accept(self)
+        return self.depth
 
     def visit_tree(self, tree: Tree):
-        return tree.subtree.accept(self)
+        tree.subtree.accept(self)
 
     def visit_internal(self, internal: Internal):
-        neighbors = internal.branch_set.accept(self)
-        name = internal.name if internal.name else f"({','.join(neighbors)})"
-        return {name: neighbors}
+        self.depth += 1
+        internal.branch_set.accept(self)
 
     def visit_leaf(self, leaf: Leaf):
-        return leaf.name
+        if leaf.name == self.node:
+            return self.depth
+        return 0
 
     def visit_branch_set(self, branch_set: BranchSet):
-        return [branch.accept(self) for branch in branch_set.branches]
+        for branch in branch_set.branches:
+            branch.accept(self)
 
     def visit_branch(self, branch: Branch):
         return branch.subtree.accept(self)
