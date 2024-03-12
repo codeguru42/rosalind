@@ -116,6 +116,21 @@ def test_build_tree():
     assert expected == actual
 
 
+def test_dist():
+    tree = {
+        "c": [
+            "a",
+            "b",
+        ]
+    }
+    a = "a"
+    b = "b"
+    c = "c"
+    actual = dist(tree, c, a, b)
+    expected = 2
+    assert expected == actual
+
+
 def test_str():
     s = "(a:1,b:2)c;"
     parser = Parser(s)
@@ -191,7 +206,10 @@ class Leaf:
 class Internal:
     def __init__(self, branch_set: "BranchSet", name: Optional[str] = None):
         self.branch_set = branch_set
-        self.name = name
+        if name:
+            self.name = name
+        else:
+            self.name = str(self.branch_set)
 
     def __eq__(self, other):
         return other and self.branch_set == other.branch_set and self.name == other.name
@@ -352,7 +370,7 @@ class Visitor(ABC):
 
 class TreeVisitor(Visitor):
     def make_tree(self, tree: Tree):
-        return tree.accept(self)
+        return tree.accept(self), tree.subtree.name
 
     def visit_tree(self, tree: Tree):
         return tree.subtree.accept(self)
@@ -372,6 +390,18 @@ class TreeVisitor(Visitor):
         return branch.subtree.accept(self)
 
 
+def dist(tree: dict[str, list[str]], root: str, a: str, b: str) -> int:
+    def dfs(node: str, parent: Optional[str], depth: int) -> dict[str, int]:
+        result = {node: depth}
+        for child in tree.get(node, []):
+            if child != parent:
+                result.update(dfs(child, node, depth + 1))
+        return result
+
+    dists = dfs(root, None, 0)
+    return dists[a] + dists[b]
+
+
 def main(filename: str):
     with open(filename) as file:
         try:
@@ -379,8 +409,8 @@ def main(filename: str):
                 tree = Parser(file.readline().strip()).parse_tree()
                 nodes = file.readline().strip().split()
                 file.readline()
-                print(repr(tree))
-                print(nodes)
+                tree, root = TreeVisitor().make_tree(tree)
+                print(dist(tree, root, *nodes))
         except StopIteration:
             pass
 
