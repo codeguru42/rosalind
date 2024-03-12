@@ -174,7 +174,9 @@ class Tokenizer:
             case c:
                 if c.isalpha():
                     start = self.i
-                    while self.i < len(self.s) and self.s[self.i].isalpha():
+                    while self.i < len(self.s) and (
+                        self.s[self.i].isalpha() or self.s[self.i] == "_"
+                    ):
                         self.i += 1
                     return TokenType.NAME, self.s[start : self.i]
                 elif c.isdigit():
@@ -316,7 +318,7 @@ class Parser:
     def parse_internal(self) -> Internal:
         branch_set = self.parse_branch_set()
         if not self.match(TokenType.RIGHT_PAREN):
-            raise ValueError("Expected right parenthesis")
+            raise ValueError(f"Expected right parenthesis. Got {self.nextToken}")
         name = self.nextToken
         if self.match(TokenType.NAME):
             return Internal(branch_set, name[1])
