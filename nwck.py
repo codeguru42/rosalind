@@ -70,7 +70,7 @@ def test_parser1():
     s = "(a:1,b:2)c;"
     parser = Parser(s)
     actual = parser.parse_tree()
-    expected = Tree(
+    expected = TreeAST(
         Internal(
             BranchSet(
                 [
@@ -88,7 +88,7 @@ def test_parser2():
     s = "(a,b);"
     parser = Parser(s)
     actual = parser.parse_tree()
-    expected = Tree(
+    expected = TreeAST(
         Internal(
             BranchSet(
                 [
@@ -98,21 +98,6 @@ def test_parser2():
             )
         ),
     )
-    assert expected == actual
-
-
-def test_build_tree():
-    s = "(a:1,b:2)c;"
-    parser = Parser(s)
-    tree = parser.parse_tree()
-    visitor = TreeVisitor()
-    actual = visitor.make_tree(tree)
-    expected = {
-        "c": [
-            "a",
-            "b",
-        ]
-    }
     assert expected == actual
 
 
@@ -130,18 +115,19 @@ def test_distance_visitor2():
     assert expected == actual
 
 
-def test_dist():
-    tree = {
-        "c": [
-            "a",
-            "b",
-        ]
-    }
-    a = "a"
-    b = "b"
-    c = "c"
-    actual = dist(tree, c, a, b)
-    expected = 2
+def test_build_tree():
+    s = "(a:1,b:2)c;"
+    tree = Parser(s).parse_tree()
+    actual = TreeVisitor().visit_tree(tree)
+    expected = Tree(
+        root=Tree.Node(
+            name="c",
+            children=[
+                Tree.Node(name="a", children=[]),
+                Tree.Node(name="b", children=[]),
+            ],
+        )
+    )
     assert expected == actual
 
 
@@ -275,7 +261,7 @@ class BranchSet:
         return visitor.visit_branch_set(self)
 
 
-class Tree:
+class TreeAST:
     def __init__(self, subtree: Internal | Leaf):
         self.subtree = subtree
 
@@ -313,13 +299,13 @@ class Parser:
         except StopIteration:
             self.at_eof = True
 
-    def parse_tree(self) -> Tree:
+    def parse_tree(self) -> TreeAST:
         subtree = self.parse_subtree()
         if not self.match(TokenType.SEMICOLON):
             raise ValueError("Expected semicolon")
         if not self.at_eof:
             raise ValueError(f"Unexpected characters at end of input: {self.nextToken}")
-        return Tree(subtree)
+        return TreeAST(subtree)
 
     def parse_subtree(self) -> Internal | Leaf:
         if self.match(TokenType.LEFT_PAREN):
@@ -364,7 +350,7 @@ class Parser:
 
 class Visitor(ABC):
     @abstractmethod
-    def visit_tree(self, tree: Tree):
+    def visit_tree(self, tree: TreeAST):
         pass
 
     @abstractmethod
@@ -385,13 +371,13 @@ class Visitor(ABC):
 
 
 class DepthVisitor(Visitor):
-    def get_depth(self, tree: Tree, node: str) -> int:
+    def get_depth(self, tree: TreeAST, node: str) -> int:
         self.depth = 0
         self.node = node
         tree.accept(self)
         return self.depth
 
-    def visit_tree(self, tree: Tree):
+    def visit_tree(self, tree: TreeAST):
         tree.subtree.accept(self)
 
     def visit_internal(self, internal: Internal):
@@ -411,16 +397,38 @@ class DepthVisitor(Visitor):
         return branch.subtree.accept(self)
 
 
-def dist(tree: dict[str, list[str]], root: str, a: str, b: str) -> int:
-    def dfs(node: str, parent: Optional[str], depth: int) -> dict[str, int]:
-        result = {node: depth}
-        for child in tree.get(node, []):
-            if child != parent:
-                result.update(dfs(child, node, depth + 1))
-        return result
+class Tree:
+    class Node:
+        def __init__(self, name: str, children: list["Tree.Node"]):
+            self.name = name
+            self.children = children
 
-    dists = dfs(root, None, 0)
-    return dists[a] + dists[b]
+        def __eq__(self, other):
+            return other and self.name == other.name and self.children == other.children
+
+    def __init__(self, root: Node):
+        self.root = root
+
+    def __eq__(self, other):
+        return other and self.root == other.root
+
+
+class TreeVisitor(Visitor):
+    def visit_tree(self, tree: TreeAST) -> Tree:
+        children = tree.subtree.accept(self)
+        return Tree(root=Tree.Node(tree.subtree.name, children))
+
+    def visit_internal(self, internal: Internal) -> list[Tree.Node]:
+        return internal.branch_set.accept(self)
+
+    def visit_leaf(self, leaf: Leaf) -> Tree.Node:
+        return Tree.Node(leaf.name, [])
+
+    def visit_branch_set(self, branch_set: BranchSet) -> list[Tree.Node]:
+        return [branch.accept(self) for branch in branch_set.branches]
+
+    def visit_branch(self, branch: Branch) -> list[Tree.Node] | Tree.Node:
+        return branch.subtree.accept(self)
 
 
 def main(filename: str):
