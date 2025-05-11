@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from collections.abc import Iterator
+from dataclasses import dataclass
 from enum import Enum
-from typing import Optional
+from typing import Optional, Self
 
 import pytest
 import typer
@@ -129,6 +130,40 @@ def test_build_tree():
         )
     )
     assert expected == actual
+
+
+def test_get_path():
+    s = "(a:1,b:2)c;"
+    tree_ast = Parser(s).parse_tree()
+    tree = TreeVisitor().visit_tree(tree_ast)
+    actual = tree.get_path("a")
+    expected = [
+        Tree.Node(
+            name="c",
+            children=[
+                Tree.Node(name="a", children=[]),
+                Tree.Node(name="b", children=[]),
+            ],
+        ),
+        Tree.Node(name="a", children=[]),
+    ]
+    assert actual == expected
+
+
+def test_dist1():
+    tree_ast = Parser("(cat)dog;").parse_tree()
+    tree = TreeVisitor().visit_tree(tree_ast)
+    actual = dist(tree, "dog", "cat")
+    expected = 1
+    assert actual == expected
+
+
+def test_dist2():
+    tree_ast = Parser("(dog,cat);").parse_tree()
+    tree = TreeVisitor().visit_tree(tree_ast)
+    actual = dist(tree, "dog", "cat")
+    expected = 2
+    assert actual == expected
 
 
 def test_str():
@@ -397,20 +432,27 @@ class DepthVisitor(Visitor):
         return branch.subtree.accept(self)
 
 
+@dataclass
 class Tree:
+    @dataclass
     class Node:
-        def __init__(self, name: str, children: list["Tree.Node"]):
-            self.name = name
-            self.children = children
+        name: str
+        children: list["Tree.Node"]
 
-        def __eq__(self, other):
-            return other and self.name == other.name and self.children == other.children
+        def get_path(self, node_name: str) -> tuple[bool, list["Tree.Node"]]:
+            if self.name == node_name:
+                return True, [self]
+            for child in self.children:
+                found, path = child.get_path(node_name)
+                if found:
+                    return True, [self] + path
+            return False, []
 
-    def __init__(self, root: Node):
-        self.root = root
+    root: Node
 
-    def __eq__(self, other):
-        return other and self.root == other.root
+    def get_path(self, node_name: str) -> list[Node]:
+        _, path = self.root.get_path(node_name)
+        return path
 
 
 class TreeVisitor(Visitor):
@@ -431,15 +473,31 @@ class TreeVisitor(Visitor):
         return branch.subtree.accept(self)
 
 
+def get_common_ancestor(path_a, path_b):
+    for i, p in enumerate(zip(path_a, path_b)):
+        a, b = p
+        if a != b:
+            return path_a[i - 1]
+    return path_a[-1]
+
+
+def dist(tree: Tree, a: str, b: str) -> int:
+    path_a = tree.get_path(a)
+    path_b = tree.get_path(b)
+    ca = get_common_ancestor(path_a, path_b)
+    dist_ca = path_a.index(ca) + 1
+    return len(path_a) + len(path_b) - 2 * dist_ca
+
+
 def main(filename: str):
     with open(filename) as file:
         try:
             while True:
-                tree = Parser(file.readline().strip()).parse_tree()
+                tree_ast = Parser(file.readline().strip()).parse_tree()
                 nodes = file.readline().strip().split()
                 file.readline()
-                tree, root = TreeVisitor().make_tree(tree)
-                print(dist(tree, root, *nodes))
+                tree = TreeVisitor().visit_tree(tree_ast)
+                print(dist(tree, *nodes))
         except StopIteration:
             pass
 
