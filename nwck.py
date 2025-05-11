@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Iterator
 from dataclasses import dataclass
 from enum import Enum
-from typing import Optional, Self
+from typing import Optional
 
 import pytest
 import typer
@@ -17,161 +17,6 @@ class TokenType(Enum):
     NAME = "NAME"
     NUMBER = "NUMBER"
     EOF = "EOF"
-
-
-def test_tokenizer_eof():
-    s = ""
-    tokenizer = Tokenizer(s)
-    assert tokenizer.next_token() == (TokenType.EOF, "")
-
-
-@pytest.mark.parametrize(
-    "s, expected",
-    [
-        (";", (TokenType.SEMICOLON, ";")),
-        ("(", (TokenType.LEFT_PAREN, "(")),
-        (")", (TokenType.RIGHT_PAREN, ")")),
-        (",", (TokenType.COMMA, ",")),
-        (":", (TokenType.COLON, ":")),
-    ],
-)
-def test_tokenizer_single_character(s, expected):
-    tokenizer = Tokenizer(s)
-    assert tokenizer.next_token() == expected
-
-
-def test_tokenizer_name():
-    s = "foo"
-    tokenizer = Tokenizer(s)
-    assert tokenizer.next_token() == (TokenType.NAME, "foo")
-
-
-def test_tokenizer_number():
-    s = "123"
-    tokenizer = Tokenizer(s)
-    assert tokenizer.next_token() == (TokenType.NUMBER, "123")
-
-
-def test_tokenizer_iter():
-    s = "(a,b)c;"
-    expected = [
-        (TokenType.LEFT_PAREN, "("),
-        (TokenType.NAME, "a"),
-        (TokenType.COMMA, ","),
-        (TokenType.NAME, "b"),
-        (TokenType.RIGHT_PAREN, ")"),
-        (TokenType.NAME, "c"),
-        (TokenType.SEMICOLON, ";"),
-    ]
-    tokenizer = Tokenizer(s)
-    assert list(tokenizer) == expected
-
-
-def test_parser1():
-    s = "(a:1,b:2)c;"
-    parser = Parser(s)
-    actual = parser.parse_tree()
-    expected = TreeAST(
-        Internal(
-            BranchSet(
-                [
-                    Branch(Leaf("a"), 1),
-                    Branch(Leaf("b"), 2),
-                ]
-            ),
-            "c",
-        )
-    )
-    assert expected == actual
-
-
-def test_parser2():
-    s = "(a,b);"
-    parser = Parser(s)
-    actual = parser.parse_tree()
-    expected = TreeAST(
-        Internal(
-            BranchSet(
-                [
-                    Branch(Leaf("a"), 1),
-                    Branch(Leaf("b"), 1),
-                ]
-            )
-        ),
-    )
-    assert expected == actual
-
-
-def test_distance_visitor1():
-    tree = Parser("(a,b)c;").parse_tree()
-    actual = DepthVisitor().get_depth(tree, "a")
-    expected = 1
-    assert expected == actual
-
-
-def test_distance_visitor2():
-    tree = Parser("(a,(b,c))d;").parse_tree()
-    actual = DepthVisitor().get_depth(tree, "b")
-    expected = 2
-    assert expected == actual
-
-
-def test_build_tree():
-    s = "(a:1,b:2)c;"
-    tree = Parser(s).parse_tree()
-    actual = TreeVisitor().visit_tree(tree)
-    expected = Tree(
-        root=Tree.Node(
-            name="c",
-            children=[
-                Tree.Node(name="a", children=[]),
-                Tree.Node(name="b", children=[]),
-            ],
-        )
-    )
-    assert expected == actual
-
-
-def test_get_path():
-    s = "(a:1,b:2)c;"
-    tree_ast = Parser(s).parse_tree()
-    tree = TreeVisitor().visit_tree(tree_ast)
-    actual = tree.get_path("a")
-    expected = [
-        Tree.Node(
-            name="c",
-            children=[
-                Tree.Node(name="a", children=[]),
-                Tree.Node(name="b", children=[]),
-            ],
-        ),
-        Tree.Node(name="a", children=[]),
-    ]
-    assert actual == expected
-
-
-def test_dist1():
-    tree_ast = Parser("(cat)dog;").parse_tree()
-    tree = TreeVisitor().visit_tree(tree_ast)
-    actual = dist(tree, "dog", "cat")
-    expected = 1
-    assert actual == expected
-
-
-def test_dist2():
-    tree_ast = Parser("(dog,cat);").parse_tree()
-    tree = TreeVisitor().visit_tree(tree_ast)
-    actual = dist(tree, "dog", "cat")
-    expected = 2
-    assert actual == expected
-
-
-def test_str():
-    s = "(a:1,b:2)c;"
-    parser = Parser(s)
-    actual = str(parser.parse_tree())
-    expected = s
-    assert expected == actual
 
 
 class Tokenizer:
@@ -381,6 +226,164 @@ class Parser:
         if not self.match(TokenType.NUMBER):
             raise ValueError("Expected number")
         return int(length_token[1])
+
+
+def test_tokenizer_eof():
+    s = ""
+    tokenizer = Tokenizer(s)
+    assert tokenizer.next_token() == (TokenType.EOF, "")
+
+
+@pytest.mark.parametrize(
+    "s, expected",
+    [
+        (";", (TokenType.SEMICOLON, ";")),
+        ("(", (TokenType.LEFT_PAREN, "(")),
+        (")", (TokenType.RIGHT_PAREN, ")")),
+        (",", (TokenType.COMMA, ",")),
+        (":", (TokenType.COLON, ":")),
+    ],
+)
+def test_tokenizer_single_character(s, expected):
+    tokenizer = Tokenizer(s)
+    assert tokenizer.next_token() == expected
+
+
+def test_tokenizer_name():
+    s = "foo"
+    tokenizer = Tokenizer(s)
+    assert tokenizer.next_token() == (TokenType.NAME, "foo")
+
+
+def test_tokenizer_number():
+    s = "123"
+    tokenizer = Tokenizer(s)
+    assert tokenizer.next_token() == (TokenType.NUMBER, "123")
+
+
+def test_tokenizer_iter():
+    s = "(a,b)c;"
+    expected = [
+        (TokenType.LEFT_PAREN, "("),
+        (TokenType.NAME, "a"),
+        (TokenType.COMMA, ","),
+        (TokenType.NAME, "b"),
+        (TokenType.RIGHT_PAREN, ")"),
+        (TokenType.NAME, "c"),
+        (TokenType.SEMICOLON, ";"),
+    ]
+    tokenizer = Tokenizer(s)
+    assert list(tokenizer) == expected
+
+
+@pytest.mark.parametrize(
+    "s,expected",
+    (
+        (
+            "(a:1,b:2)c;",
+            TreeAST(
+                Internal(
+                    BranchSet(
+                        [
+                            Branch(Leaf("a"), 1),
+                            Branch(Leaf("b"), 2),
+                        ]
+                    ),
+                    "c",
+                )
+            ),
+        ),
+        (
+            "(a,b);",
+            TreeAST(
+                Internal(
+                    BranchSet(
+                        [
+                            Branch(Leaf("a"), 1),
+                            Branch(Leaf("b"), 1),
+                        ]
+                    )
+                ),
+            ),
+        ),
+    ),
+)
+def test_parser(s, expected):
+    parser = Parser(s)
+    actual = parser.parse_tree()
+    assert expected == actual
+
+
+def test_distance_visitor1():
+    tree = Parser("(a,b)c;").parse_tree()
+    actual = DepthVisitor().get_depth(tree, "a")
+    expected = 1
+    assert expected == actual
+
+
+def test_distance_visitor2():
+    tree = Parser("(a,(b,c))d;").parse_tree()
+    actual = DepthVisitor().get_depth(tree, "b")
+    expected = 2
+    assert expected == actual
+
+
+def test_build_tree():
+    s = "(a:1,b:2)c;"
+    tree = Parser(s).parse_tree()
+    actual = TreeVisitor().visit_tree(tree)
+    expected = Tree(
+        root=Tree.Node(
+            name="c",
+            children=[
+                Tree.Node(name="a", children=[]),
+                Tree.Node(name="b", children=[]),
+            ],
+        )
+    )
+    assert expected == actual
+
+
+def test_get_path():
+    s = "(a:1,b:2)c;"
+    tree_ast = Parser(s).parse_tree()
+    tree = TreeVisitor().visit_tree(tree_ast)
+    actual = tree.get_path("a")
+    expected = [
+        Tree.Node(
+            name="c",
+            children=[
+                Tree.Node(name="a", children=[]),
+                Tree.Node(name="b", children=[]),
+            ],
+        ),
+        Tree.Node(name="a", children=[]),
+    ]
+    assert actual == expected
+
+
+def test_dist1():
+    tree_ast = Parser("(cat)dog;").parse_tree()
+    tree = TreeVisitor().visit_tree(tree_ast)
+    actual = dist(tree, "dog", "cat")
+    expected = 1
+    assert actual == expected
+
+
+def test_dist2():
+    tree_ast = Parser("(dog,cat);").parse_tree()
+    tree = TreeVisitor().visit_tree(tree_ast)
+    actual = dist(tree, "dog", "cat")
+    expected = 2
+    assert actual == expected
+
+
+def test_str():
+    s = "(a:1,b:2)c;"
+    parser = Parser(s)
+    actual = str(parser.parse_tree())
+    expected = s
+    assert expected == actual
 
 
 class Visitor(ABC):
