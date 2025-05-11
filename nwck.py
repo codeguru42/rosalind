@@ -497,7 +497,7 @@ def main(filename: str):
                 nodes = file.readline().strip().split()
                 file.readline()
                 tree = TreeVisitor().visit_tree(tree_ast)
-                print(dist(tree, *nodes))
+                print(dist(tree, *nodes), end=" ")
         except StopIteration:
             pass
 
