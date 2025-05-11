@@ -68,15 +68,9 @@ class Tokenizer:
                     raise ValueError(f"Unexpected character: {c}")
 
 
+@dataclass
 class Leaf:
-    def __init__(self, name: str):
-        self.name = name
-
-    def __eq__(self, other):
-        return other and self.name == other.name
-
-    def __repr__(self):
-        return f"Leaf({self.name=!r})"
+    name: str
 
     def __str__(self):
         return self.name
@@ -85,19 +79,17 @@ class Leaf:
         return visitor.visit_leaf(self)
 
 
+@dataclass
 class Internal:
+    branch_set: "BranchSet"
+    name: Optional[str]
+    
     def __init__(self, branch_set: "BranchSet", name: Optional[str] = None):
         self.branch_set = branch_set
         if name:
             self.name = name
         else:
             self.name = str(self.branch_set)
-
-    def __eq__(self, other):
-        return other and self.branch_set == other.branch_set and self.name == other.name
-
-    def __repr__(self):
-        return f"Internal({self.branch_set=!r}, {self.name=!r})"
 
     def __str__(self):
         return f"({self.branch_set!s}){self.name or ''}"
@@ -106,33 +98,21 @@ class Internal:
         return visitor.visit_internal(self)
 
 
+@dataclass
 class Branch:
-    def __init__(self, subtree: Internal | Leaf, length: int = 1):
-        self.subtree = subtree
-        self.length = length
-
-    def __eq__(self, other):
-        return other and self.subtree == other.subtree and self.length == other.length
+    subtree: Internal | Leaf
+    length: int = 1
 
     def __str__(self):
         return f"{self.subtree!s}:{self.length}"
-
-    def __repr__(self):
-        return f"Branch({self.subtree=!r}, {self.length=!r})"
 
     def accept(self, visitor: "Visitor"):
         return visitor.visit_branch(self)
 
 
+@dataclass
 class BranchSet:
-    def __init__(self, branches: list[Branch]):
-        self.branches = branches
-
-    def __eq__(self, other):
-        return other and self.branches == other.branches
-
-    def __repr__(self):
-        return f"BranchSet({self.branches=!r})"
+    branches: list[Branch]
 
     def __str__(self):
         return ",".join(map(str, self.branches))
@@ -141,15 +121,9 @@ class BranchSet:
         return visitor.visit_branch_set(self)
 
 
+@dataclass
 class TreeAST:
-    def __init__(self, subtree: Internal | Leaf):
-        self.subtree = subtree
-
-    def __eq__(self, other):
-        return other and self.subtree == other.subtree
-
-    def __repr__(self):
-        return f"Tree({self.subtree=!r})"
+    subtree: Internal | Leaf
 
     def __str__(self):
         return f"{self.subtree!s};"
