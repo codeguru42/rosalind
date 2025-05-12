@@ -8,5 +8,6 @@ def main(filename: str):
         fasta = parse_fasta(f)
         print(fasta)
 
+
 if __name__ == '__main__':
     typer.run(main)
