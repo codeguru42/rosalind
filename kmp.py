@@ -37,7 +37,7 @@ def main(filename: str):
     with open(filename) as f:
         fasta = parse_fasta(f)
         for dna in fasta:
-            print(list(failure(dna)))
+            print(" ".join(str(i) for i in failure(dna)))
 
 
 if __name__ == "__main__":
