@@ -1,5 +1,7 @@
 import typer
 
+from rosalind import sliding_window
+
 monoisotopic_mass_table = {
     "A": 71.03711,
     "C": 103.00919,
@@ -27,12 +29,18 @@ monoisotopic_mass_table = {
 def parse(f):
     for line in f:
         yield float(line)
+        
+
+def diffs(l):
+    for x, y in sliding_window(l, 2):
+        yield y-x
 
 
 def main(filename: str):
     with open(filename, "r") as f:
-        l = list(parse(f))
-        print(l)
+        l = parse(f)
+        d = diffs(l)
+        print(list(d))
 
 
 if __name__ == "__main__":
