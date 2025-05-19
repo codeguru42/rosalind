@@ -29,18 +29,23 @@ monoisotopic_mass_table = {
 def parse(f):
     for line in f:
         yield float(line)
-        
+
 
 def diffs(l):
     for x, y in sliding_window(l, 2):
-        yield y-x
+        yield y - x
+
+
+def calc_isotope(x):
+    return min(monoisotopic_mass_table.items(), key=lambda i: abs(i[1] - x))[0]
 
 
 def main(filename: str):
     with open(filename, "r") as f:
         l = parse(f)
         d = diffs(l)
-        print(list(d))
+        p = "".join(calc_isotope(x) for x in d)
+        print(p)
 
 
 if __name__ == "__main__":
