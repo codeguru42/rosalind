@@ -1,19 +1,15 @@
 [project]
-name= "rosalind.info"
-dependencies = [
-    "pytest>=7.1.2",
-    "black>=23.10.0",
-    "typer>=0.9.0"
-]
-requires-python = ">=3.10"
-
-[tool.poetry]
 name = "rosalind"
 version = "0.1.0"
-description = ""
-authors = ["codeguru <codeguru42@gmail.com>"]
-package-mode = false
+description = "Solutions for problems at rosalind.info"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "typer>=0.20.0",
+]
 
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[dependency-groups]
+dev = [
+    "black>=25.11.0",
+    "pytest>=9.0.1",
+]
