@@ -1,3 +1,5 @@
+from collections import Counter, defaultdict
+
 import typer
 
 from rosalind import parse_fasta
@@ -33,23 +35,28 @@ def hamming(s1: str, s2: str) -> int:
     return d
 
 
+def build_distance_mapping(rna1: str, rnas: list[str]) -> dict[int, list[str]]:
+    result = defaultdict(list)
+    for rna2 in rnas:
+        d = hamming(rna1, rna2)
+        result[d].append(rna2)
+    return result
+
+
 def main(filename: str):
     with open(filename) as f:
         rnas = list(parse_fasta(f))
         for rna1 in rnas:
-            for rna2 in rnas:
-                d = hamming(rna1, rna2)
-                if d == 0:
-                    continue
-                if d == 1:
-                    print(f"{rna1}->{rna2}")
-                    continue
-                rc = reverse_complement(rna2)
-                d_comp = hamming(rna1, rc)
-                if d_comp == 0:
-                    continue
-                if d_comp == 1:
-                    print(f"{rna1}->{rc}")
+            dm = build_distance_mapping(rna1, rnas)
+            rev_comps = [reverse_complement(rna2) for rna2 in rnas]
+            dmrc = build_distance_mapping(rna1, rev_comps)
+            # Found a match - correctly sequenced
+            if len(dm[0]) >= 2 or len(dmrc[0]) >= 2:
+                continue
+            if len(dm[1]) == 1:
+                print(f"{rna1}->{dm[1][0]}")
+            if len(dmrc[1]) == 1:
+                print(f"{rna1}->{dmrc[1][0]}")
 
 
 if __name__ == "__main__":
