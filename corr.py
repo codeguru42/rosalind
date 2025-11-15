@@ -51,10 +51,11 @@ def main(filename: str):
             rev_comps = [reverse_complement(rna2) for rna2 in rnas]
             dmrc = build_distance_mapping(rna1, rev_comps)
             # Found a match - correctly sequenced
-            if len(dm[0]) >= 2 or len(dmrc[0]) >= 2:
+            if len(dm[0]) + len(dmrc[0]) >= 2:
                 continue
             if len(dm[1]) == 1:
                 print(f"{rna1}->{dm[1][0]}")
+                continue
             if len(dmrc[1]) == 1:
                 print(f"{rna1}->{dmrc[1][0]}")
 
