@@ -56,7 +56,7 @@ def main(filename: str):
             if len(dm[1]) == 1:
                 print(f"{rna1}->{dm[1][0]}")
                 continue
-            if len(dmrc[1]) == 1:
+            if len(dmrc[1]) >= 1:
                 print(f"{rna1}->{dmrc[1][0]}")
 
 
