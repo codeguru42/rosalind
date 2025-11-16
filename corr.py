@@ -18,7 +18,7 @@ def complement(rna: str) -> str:
                 case "T":
                     yield "A"
                 case _:
-                    raise f"Invalid nucleotide: {c}"
+                    raise Exception(f"Invalid nucleotide: {c}")
 
     return "".join(f())
 
