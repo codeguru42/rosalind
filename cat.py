@@ -33,18 +33,20 @@ def complement(base):
     raise "Invalid base"
 
 
-@functools.cache
 def catalan_rna(rna):
     n = len(rna)
-    if n == 0 or n == 1:
-        return 1
+    cat = [0] * (n+2)  # so I don't have to deal with IndexError when n == 0
 
-    cat = 0
-    for j in range(1, n):
-        if rna[0] == complement(rna[j]):
-            cat += catalan_rna(rna[1:j]) * catalan_rna(rna[j + 1:])
+    cat[0] = 1
+    cat[1] = 1
+    for i in range(2, n):
+        if rna[0] == complement(rna[i]):
+            for k in range(1, i+1):
+                cat[i] += cat[k-1] * cat[i-k]
+        else:
+            cat[i] = 1
 
-    return cat
+    return cat[-2]
 
 
 def catalan(n):
