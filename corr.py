@@ -53,7 +53,7 @@ def main(filename: str):
             # Found a match - correctly sequenced
             if len(dm[0]) + len(dmrc[0]) >= 2:
                 continue
-            if len(dm[1]) == 1:
+            if len(dm[1]) >= 1:
                 print(f"{rna1}->{dm[1][0]}")
                 continue
             if len(dmrc[1]) >= 1:
