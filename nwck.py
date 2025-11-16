@@ -437,8 +437,8 @@ class TreeVisitor(Visitor):
         children = tree.subtree.accept(self)
         return Tree(root=Tree.Node(tree.subtree.name, children))
 
-    def visit_internal(self, internal: Internal) -> list[Tree.Node]:
-        return internal.branch_set.accept(self)
+    def visit_internal(self, internal: Internal) -> Tree.Node:
+        return Tree.Node(name=internal.name, children=internal.branch_set.accept(self))
 
     def visit_leaf(self, leaf: Leaf) -> Tree.Node:
         return Tree.Node(leaf.name, [])
