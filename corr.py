@@ -1,4 +1,5 @@
 from collections import Counter, defaultdict
+from typing import Iterable
 
 import typer
 
@@ -35,7 +36,7 @@ def hamming(s1: str, s2: str) -> int:
     return d
 
 
-def build_distance_mapping(rna1: str, rnas: list[str]) -> dict[int, list[str]]:
+def build_distance_mapping(rna1: str, rnas: Iterable[str]) -> dict[int, list[str]]:
     result = defaultdict(list)
     for rna2 in rnas:
         d = hamming(rna1, rna2)
@@ -43,21 +44,30 @@ def build_distance_mapping(rna1: str, rnas: list[str]) -> dict[int, list[str]]:
     return result
 
 
+def build_errors(rnas: list[str]) -> Iterable[str]:
+    for rna in rnas:
+        dm = build_distance_mapping(rna, rnas)
+        rev_comps = [reverse_complement(rna2) for rna2 in rnas]
+        dmrc = build_distance_mapping(rna, rev_comps)
+        if len(dm[0]) + len(dmrc[0]) < 2:
+            yield rna
+
+
 def main(filename: str):
     with open(filename) as f:
         rnas = list(parse_fasta(f))
-        for rna1 in rnas:
-            dm = build_distance_mapping(rna1, rnas)
-            rev_comps = [reverse_complement(rna2) for rna2 in rnas]
-            dmrc = build_distance_mapping(rna1, rev_comps)
+        errors = list(build_errors(rnas))
+        correct = set(rnas) - set(errors)
+        for error in errors:
+            dm = build_distance_mapping(error, correct)
+            rev_comps = [reverse_complement(rna2) for rna2 in correct]
+            dmrc = build_distance_mapping(error, rev_comps)
             # Found a match - correctly sequenced
-            if len(dm[0]) + len(dmrc[0]) >= 2:
-                continue
             if len(dm[1]) >= 1:
-                print(f"{rna1}->{dm[1][0]}")
+                print(f"{error}->{dm[1][0]}")
                 continue
             if len(dmrc[1]) >= 1:
-                print(f"{rna1}->{dmrc[1][0]}")
+                print(f"{error}->{dmrc[1][0]}")
 
 
 if __name__ == "__main__":
