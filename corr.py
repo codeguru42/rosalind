@@ -1,31 +1,9 @@
-from collections import Counter, defaultdict
+from collections import defaultdict
 from typing import Iterable
 
 import typer
 
-from rosalind import parse_fasta
-
-
-def complement(rna: str) -> str:
-    def f():
-        for c in rna:
-            match c:
-                case "A":
-                    yield "T"
-                case "C":
-                    yield "G"
-                case "G":
-                    yield "C"
-                case "T":
-                    yield "A"
-                case _:
-                    raise Exception(f"Invalid nucleotide: {c}")
-
-    return "".join(f())
-
-
-def reverse_complement(rna: str) -> str:
-    return complement(rna[::-1])
+from rosalind import parse_fasta, reverse_complement
 
 
 def hamming(s1: str, s2: str) -> int:
